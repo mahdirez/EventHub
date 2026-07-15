@@ -1,8 +1,7 @@
-export default function DashboardPage() {
-  return (
-    <div>
-      <h1>Dashboard</h1>
-      <p>Welcome to the dashboard page!</p>
-    </div>
-  );
+import {getSession} from "@/lib/auth/server";
+import {DashboardContent} from "@/components/dashboard-content";
+
+export default async function DashboardPage() {
+    const session = await getSession();
+    return <DashboardContent userId={session.data.user.id} />;
 }

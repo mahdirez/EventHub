@@ -9,7 +9,7 @@ export function DashboardContent({ userId }: { userId: string }) {
                   <p className="text-sm text-[var(--muted-foreground)]">Tranck attence responses and manage invite links.</p>
               </div>
               <Button asChild>
-                  <Link href="/event/new">Create event</Link>
+                  <Link href="/events/new">Create event</Link>
               </Button>
           </div>
     </div>

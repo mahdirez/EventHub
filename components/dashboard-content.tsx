@@ -2,7 +2,20 @@ import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import type { RsvpStatus as PrismaRsvpStatus } from "@/app/generated/prisma/enums";
 import { Badge } from "./ui/badge";
+
+function countByStatus(rsvps: { status: PrismaRsvpStatus }[]){
+  let goingCount= 0;
+  let maybeCount= 0;
+  let notGoingCount= 0;
+  for(const r of rsvps){
+    if(r.status === "going") goingCount += 1;
+    else if(r.status === "maybe") maybeCount += 1;
+    else if(r.status === "not_going") notGoingCount += 1;
+  }
+  return { goingCount, maybeCount, notGoingCount };
+}
 
 export async function DashboardContent({ userId }: { userId: string }) {
   const rows = await prisma.event.findMany({
@@ -17,7 +30,7 @@ export async function DashboardContent({ userId }: { userId: string }) {
       title: true,
       eventDate: true,
       location: true,
-      //   rsvps: { select: { status: true } },
+      rsvps: { select: { status: true } },
     },
   });
 
@@ -26,7 +39,7 @@ export async function DashboardContent({ userId }: { userId: string }) {
     title: row.title,
     eventDate: row.eventDate ? row.eventDate.toISOString() : null,
     location: row.location,
-    // rsvpCount: row.rsvps.length,
+    ...countByStatus(row.rsvps)
   }));
   return (
     <div className="flex flex-1 flex-col gap-6">
@@ -67,9 +80,9 @@ export async function DashboardContent({ userId }: { userId: string }) {
                   </Button>
                 </div>
                 <div className="flex flex-wrap gap-2 text-xs">
-                  <Badge variant={"secondary"} />
-                  <Badge variant={"secondary"} />
-                  <Badge variant={"secondary"} />
+                  <Badge variant={"secondary"} >Going: {event.goingCount}</Badge>
+                  <Badge variant={"secondary"} >Maybe: {event.maybeCount}</Badge>
+                  <Badge variant={"secondary"} >Not Going: {event.notGoingCount}</Badge>
                 </div>
                 <p>
                   {event.eventDate

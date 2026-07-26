@@ -5,14 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import type { RsvpStatus as PrismaRsvpStatus } from "@/app/generated/prisma/enums";
 import { Badge } from "./ui/badge";
 
-function countByStatus(rsvps: { status: PrismaRsvpStatus }[]){
-  let goingCount= 0;
-  let maybeCount= 0;
-  let notGoingCount= 0;
-  for(const r of rsvps){
-    if(r.status === "going") goingCount += 1;
-    else if(r.status === "maybe") maybeCount += 1;
-    else if(r.status === "not_going") notGoingCount += 1;
+export function countByStatus(rsvps: { status: PrismaRsvpStatus }[]) {
+  let goingCount = 0;
+  let maybeCount = 0;
+  let notGoingCount = 0;
+  for (const r of rsvps) {
+    if (r.status === "going") goingCount += 1;
+    else if (r.status === "maybe") maybeCount += 1;
+    else if (r.status === "not_going") notGoingCount += 1;
   }
   return { goingCount, maybeCount, notGoingCount };
 }
@@ -34,12 +34,12 @@ export async function DashboardContent({ userId }: { userId: string }) {
     },
   });
 
-  const events = rows.map((row) => ({
+  const events = rows.map(row => ({
     id: row.id,
     title: row.title,
     eventDate: row.eventDate ? row.eventDate.toISOString() : null,
     location: row.location,
-    ...countByStatus(row.rsvps)
+    ...countByStatus(row.rsvps),
   }));
   return (
     <div className="flex flex-1 flex-col gap-6">
@@ -70,7 +70,7 @@ export async function DashboardContent({ userId }: { userId: string }) {
         </Card>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {events.map((event) => (
+          {events.map(event => (
             <Card key={event.id}>
               <CardHeader className="space-y-3">
                 <div className="flex items-center justify-between gap-2">
@@ -80,9 +80,11 @@ export async function DashboardContent({ userId }: { userId: string }) {
                   </Button>
                 </div>
                 <div className="flex flex-wrap gap-2 text-xs">
-                  <Badge variant={"secondary"} >Going: {event.goingCount}</Badge>
-                  <Badge variant={"secondary"} >Maybe: {event.maybeCount}</Badge>
-                  <Badge variant={"secondary"} >Not Going: {event.notGoingCount}</Badge>
+                  <Badge variant={"secondary"}>Going: {event.goingCount}</Badge>
+                  <Badge variant={"secondary"}>Maybe: {event.maybeCount}</Badge>
+                  <Badge variant={"secondary"}>
+                    Not Going: {event.notGoingCount}
+                  </Badge>
                 </div>
                 <p>
                   {event.eventDate

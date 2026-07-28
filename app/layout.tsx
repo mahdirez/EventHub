@@ -32,7 +32,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-[var(--background)]  text-[var(--foreground)]">
-        <NeonAuthUIProvider authClient={authClient} emailOTP>
+        <NeonAuthUIProvider authClient={authClient } emailOTP defaultTheme={"dark"}>
           <header className="border-b border-[var(--border)] bg-[var(--surface)]/90 backdrop-blur">
             <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
               <Link href="/" className="text-sm font-semibold tracking-wide">

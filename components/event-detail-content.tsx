@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader } from "./ui/card";
-import {createInviteLinkAction} from "@/lib/actions/events";
+import { createInviteLinkAction } from "@/lib/actions/events";
 
 export async function EventDetailContent({
   eventId,
@@ -45,9 +45,14 @@ export async function EventDetailContent({
     notGoingCount: counts.notGoingCount,
   };
 
-  const createInviteActionForEvent = createInviteLinkAction.bind(null, event.id);
+  const createInviteActionForEvent = createInviteLinkAction.bind(
+    null,
+    event.id,
+  );
 
-  const inviteUrl = event.inviteToken ? `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/invites/${event.inviteToken}` : event.inviteToken;
+  const inviteUrl = event.inviteToken
+    ? `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/invite/${event.inviteToken}`
+    : event.inviteToken;
 
   return (
     <div className="flex flex-col gap-6">
@@ -85,14 +90,22 @@ export async function EventDetailContent({
             share this link with guests so they can RSVP without creating an
             account.
           </p>
-            {inviteUrl ? (
-                <div className={"rounded-md border border-[var(--border)] bg-[var(--surface)] p-3 text-sm"}>
-                    {inviteUrl}
-                </div>
-            ) : <p className={"text-sm text-[var-(--muted-foreground)]"}>No invite link generated yet.</p>}
-            <form action={createInviteActionForEvent}>
-                <Button type={"submit"}>Generate Link</Button>
-            </form>
+          {inviteUrl ? (
+            <div
+              className={
+                "rounded-md border border-[var(--border)] bg-[var(--surface)] p-3 text-sm"
+              }
+            >
+              {inviteUrl}
+            </div>
+          ) : (
+            <p className={"text-sm text-[var-(--muted-foreground)]"}>
+              No invite link generated yet.
+            </p>
+          )}
+          <form action={createInviteActionForEvent}>
+            <Button type={"submit"}>Generate Link</Button>
+          </form>
         </CardContent>
       </Card>
     </div>

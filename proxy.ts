@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 
-
-function isServerActionPost(request: NextRequest){
+function isServerActionPost(request: NextRequest) {
   if (request.method !== "POST") {
     return false;
   }
   const h = request.headers;
-  return Boolean(h.get("Next-Action")?? h.get("Next-action"))
+  return Boolean(h.get("Next-Action") ?? h.get("next-action"));
 }
 export default async function proxy(request: NextRequest) {
-  if(isServerActionPost(request)){
+  if (isServerActionPost(request)) {
     return NextResponse.next();
   }
   const { auth } = await import("@/lib/auth/server");
@@ -20,5 +19,5 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*" , "/events/:path*"],
+  matcher: ["/dashboard/:path*", "/events/:path*"],
 };

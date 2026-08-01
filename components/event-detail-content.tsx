@@ -4,8 +4,16 @@ import { countByStatus } from "./dashboard-content";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
-import { Card, CardContent, CardHeader } from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { createInviteLinkAction } from "@/lib/actions/events";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
 
 export async function EventDetailContent({
   eventId,
@@ -44,6 +52,26 @@ export async function EventDetailContent({
     maybeCount: counts.maybeCount,
     notGoingCount: counts.notGoingCount,
   };
+
+  const rsvpRows = await prisma.eventRsvp.findMany({
+    where: { eventId },
+    orderBy: { respondedAt: "desc" },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      status: true,
+      respondedAt: true,
+    },
+  });
+
+  const rsvps = rsvpRows.map((rsvp) => ({
+    id: rsvp.id,
+    name: rsvp.name,
+    email: rsvp.email,
+    status: rsvp.status,
+    respondedAt: rsvp.respondedAt.toISOString(),
+  }));
 
   const createInviteActionForEvent = createInviteLinkAction.bind(
     null,
@@ -105,6 +133,45 @@ export async function EventDetailContent({
           <form action={createInviteActionForEvent}>
             <Button type={"submit"}>Generate Link</Button>
           </form>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Attendees</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {rsvps.length === 0 ? (
+            <p className="text-sm text-[var(--muted-foreground)]">
+              No attendees yet.
+            </p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Updated</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {rsvps.map((rsvp) => (
+                  <TableRow key={rsvp.id}>
+                    <TableCell>{rsvp.name}</TableCell>
+                    <TableCell>{rsvp.email}</TableCell>
+                    <TableCell>
+                      <Badge>
+                        {rsvp.status === "not_going"
+                          ? "Not Going"
+                          : rsvp.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>{new Date(rsvp.respondedAt).toLocaleDateString()}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>

@@ -11,6 +11,6 @@ export default async function InvitePage({
   const query = await searchParams;
 
   return (
-    <InviteRsvpContent token={token} submmited={query.submitted === "1"} />
+    <InviteRsvpContent token={token} submitted={query.submitted === "1"} />
   );
 }

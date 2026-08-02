@@ -5,7 +5,8 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { createInviteLinkAction } from "@/lib/actions/events";
+import { createInviteLinkAction, deleteEventAction } from "@/lib/actions/events";
+import { DeleteEventButton } from "./delete-event-button";
 import {
   Table,
   TableBody,
@@ -77,6 +78,7 @@ export async function EventDetailContent({
     null,
     event.id,
   );
+  const deleteEventActionForEvent = deleteEventAction.bind(null, event.id);
 
   const inviteUrl = event.inviteToken
     ? `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/invite/${event.inviteToken}`
@@ -101,9 +103,18 @@ export async function EventDetailContent({
             </p>
           )}
         </div>
-        <Button asChild variant="outline">
-          <Link href={"/dashboard"}>Back</Link>
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button asChild variant="outline">
+            <Link href="/dashboard">Back</Link>
+          </Button>
+          <Button asChild variant="secondary">
+            <Link href={`/events/${event.id}/edit`}>Edit event</Link>
+          </Button>
+          <DeleteEventButton
+            action={deleteEventActionForEvent}
+            eventTitle={event.title}
+          />
+        </div>
       </div>
       <div className="flex flex-wrap gap-2 text-xs">
         <Badge>Going: {event.goingCount}</Badge>

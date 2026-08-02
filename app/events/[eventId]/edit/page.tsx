@@ -41,6 +41,7 @@ export default async function EditEventPage({
     <EventForm
       title="Edit Event"
       submitLabel="Save changes"
+      pendingLabel="Saving..."
       cancelHref={`/events/${event.id}`}
       action={updateAction}
       defaultValues={{

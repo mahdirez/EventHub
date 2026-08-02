@@ -1,11 +1,17 @@
+"use client";
+
+import { useActionState } from "react";
 import Link from "next/link";
 
+import { FormSubmitButton } from "@/components/form-submit-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useActionToast } from "@/hooks/use-action-toast";
 import { toDatetimeLocalValue } from "@/lib/event-datetime";
+import type { ActionState } from "@/lib/action-state";
 
 type EventFormValues = {
   title: string;
@@ -17,18 +23,26 @@ type EventFormValues = {
 type EventFormProps = {
   title: string;
   submitLabel: string;
+  pendingLabel?: string;
   cancelHref: string;
-  action: (formData: FormData) => Promise<void>;
+  action: (
+    prevState: ActionState,
+    formData: FormData,
+  ) => Promise<ActionState>;
   defaultValues?: EventFormValues;
 };
 
 export function EventForm({
   title,
   submitLabel,
+  pendingLabel,
   cancelHref,
   action,
   defaultValues,
 }: EventFormProps) {
+  const [state, formAction] = useActionState(action, null);
+  useActionToast(state);
+
   return (
     <div className="mx-auto w-full max-w-2xl">
       <Card>
@@ -36,7 +50,7 @@ export function EventForm({
           <CardTitle>{title}</CardTitle>
         </CardHeader>
         <CardContent>
-          <form action={action}>
+          <form action={formAction}>
             <FieldGroup>
               <FieldSet>
                 <FieldGroup>
@@ -91,8 +105,13 @@ export function EventForm({
                   </Field>
                 </FieldGroup>
               </FieldSet>
+              {state?.error ? (
+                <p className="text-sm text-destructive">{state.error}</p>
+              ) : null}
               <div className="flex items-center gap-3">
-                <Button type="submit">{submitLabel}</Button>
+                <FormSubmitButton pendingLabel={pendingLabel}>
+                  {submitLabel}
+                </FormSubmitButton>
                 <Button type="button" variant="outline" asChild>
                   <Link href={cancelHref}>Cancel</Link>
                 </Button>

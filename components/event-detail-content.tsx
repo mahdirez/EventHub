@@ -6,7 +6,8 @@ import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { createInviteLinkAction, deleteEventAction } from "@/lib/actions/events";
-import { DeleteEventButton } from "./delete-event-button";
+import { DeleteEventDialog } from "./delete-event-dialog";
+import { GenerateInviteForm } from "./generate-invite-form";
 import {
   Table,
   TableBody,
@@ -110,7 +111,7 @@ export async function EventDetailContent({
           <Button asChild variant="secondary">
             <Link href={`/events/${event.id}/edit`}>Edit event</Link>
           </Button>
-          <DeleteEventButton
+          <DeleteEventDialog
             action={deleteEventActionForEvent}
             eventTitle={event.title}
           />
@@ -141,9 +142,7 @@ export async function EventDetailContent({
               No invite link generated yet.
             </p>
           )}
-          <form action={createInviteActionForEvent}>
-            <Button type={"submit"}>Generate Link</Button>
-          </form>
+          <GenerateInviteForm action={createInviteActionForEvent} />
         </CardContent>
       </Card>
       <Card>

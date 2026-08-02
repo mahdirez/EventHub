@@ -4,6 +4,7 @@ import "./globals.css";
 import Link from "next/link";
 import { NeonAuthUIProvider, UserButton } from "@neondatabase/auth/react";
 import { authClient } from "@/lib/auth/client";
+import { Providers } from "@/components/providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,27 +33,29 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col bg-[var(--background)]  text-[var(--foreground)]">
-        <NeonAuthUIProvider authClient={authClient } emailOTP defaultTheme={"dark"}>
-          <header className="border-b border-[var(--border)] bg-[var(--surface)]/90 backdrop-blur">
-            <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
-              <Link href="/" className="text-sm font-semibold tracking-wide">
-                Event Planner
-              </Link>
-              <nav className="flex items-center gap-4">
-                <Link
-                  href="/dashboard"
-                  className="text-sm text-[var(--muted-foreground)]"
-                >
-                  Dashboard
+        <Providers>
+          <NeonAuthUIProvider authClient={authClient } emailOTP defaultTheme={"dark"}>
+            <header className="border-b border-[var(--border)] bg-[var(--surface)]/90 backdrop-blur">
+              <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4">
+                <Link href="/" className="text-sm font-semibold tracking-wide">
+                  Event Planner
                 </Link>
-                <UserButton size="icon" />
-              </nav>
-            </div>
-          </header>
-          <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-8">
-            {children}
-          </main>
-        </NeonAuthUIProvider>
+                <nav className="flex items-center gap-4">
+                  <Link
+                    href="/dashboard"
+                    className="text-sm text-[var(--muted-foreground)]"
+                  >
+                    Dashboard
+                  </Link>
+                  <UserButton size="icon" />
+                </nav>
+              </div>
+            </header>
+            <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-4 py-8">
+              {children}
+            </main>
+          </NeonAuthUIProvider>
+        </Providers>
       </body>
     </html>
   );

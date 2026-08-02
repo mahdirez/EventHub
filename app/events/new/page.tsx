@@ -6,6 +6,7 @@ export default function NewEventPage() {
     <EventForm
       title="Create Event"
       submitLabel="Create event"
+      pendingLabel="Creating..."
       cancelHref="/dashboard"
       action={createEventAction}
     />

@@ -3,10 +3,18 @@
 import { useActionState } from "react";
 
 import { FormSubmitButton } from "@/components/form-submit-button";
-import { Field, FieldGroup, FieldLabel, FieldSet } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+  FieldSet,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useActionToast } from "@/hooks/use-action-toast";
 import type { ActionState } from "@/lib/action-state";
+import { fieldErrorMessages } from "@/lib/validations/parse-form-data";
+import { rsvpFormConstraints } from "@/lib/validations/rsvp";
 
 type InviteRsvpFormProps = {
   action: (
@@ -27,33 +35,38 @@ export function InviteRsvpForm({ action, submitted }: InviteRsvpFormProps) {
           Your RSVP has been recorded.
         </p>
       ) : null}
-      <form action={formAction}>
+      <form action={formAction} noValidate>
         <FieldGroup>
           <FieldSet>
-            <Field>
+            <Field data-invalid={Boolean(state?.fieldErrors?.name)}>
               <FieldLabel htmlFor="name">Name</FieldLabel>
               <Input
                 id="name"
                 name="name"
                 placeholder="Your Name"
+                minLength={rsvpFormConstraints.name.minLength}
+                maxLength={rsvpFormConstraints.name.maxLength}
                 required
               />
+              <FieldError errors={fieldErrorMessages(state?.fieldErrors, "name")} />
             </Field>
           </FieldSet>
           <FieldSet>
-            <Field>
+            <Field data-invalid={Boolean(state?.fieldErrors?.email)}>
               <FieldLabel htmlFor="email">Email</FieldLabel>
               <Input
                 id="email"
                 name="email"
                 type="email"
                 placeholder="you@example.com"
+                maxLength={rsvpFormConstraints.email.maxLength}
                 required
               />
+              <FieldError errors={fieldErrorMessages(state?.fieldErrors, "email")} />
             </Field>
           </FieldSet>
           <FieldSet>
-            <Field>
+            <Field data-invalid={Boolean(state?.fieldErrors?.status)}>
               <FieldLabel htmlFor="status">Attendance</FieldLabel>
               <select
                 id="status"
@@ -66,9 +79,10 @@ export function InviteRsvpForm({ action, submitted }: InviteRsvpFormProps) {
                 <option value="maybe">Maybe</option>
                 <option value="not_going">Not going</option>
               </select>
+              <FieldError errors={fieldErrorMessages(state?.fieldErrors, "status")} />
             </Field>
           </FieldSet>
-          {state?.error ? (
+          {state?.error && !state.fieldErrors ? (
             <p className="text-sm text-destructive">{state.error}</p>
           ) : null}
           <FormSubmitButton className="w-fit" pendingLabel="Submitting...">

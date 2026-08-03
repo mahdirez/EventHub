@@ -8,9 +8,11 @@ import {
   actionSuccess,
   getErrorMessage,
 } from "@/lib/action-state";
+import { eventFormSchema } from "@/lib/validations/event";
+import { parseFormData } from "@/lib/validations/parse-form-data";
+import { rsvpFormSchema } from "@/lib/validations/rsvp";
 import { getSession } from "../auth/server";
 import { prisma } from "../prisma";
-import { RsvpStatus } from "@/app/generated/prisma/enums";
 
 async function requireEventOwner(eventId: string, userId: string | undefined) {
   if (!userId) {
@@ -29,48 +31,6 @@ async function requireEventOwner(eventId: string, userId: string | undefined) {
   return event;
 }
 
-function parseEventForm(formData: FormData) {
-  const title = String(formData.get("title") ?? "").trim();
-  if (title.length < 3 || title.length > 120) {
-    throw new Error("Title must be between 3 and 120 characters");
-  }
-  const description = String(formData.get("description") ?? "").trim();
-  const location = String(formData.get("location") ?? "").trim();
-  const eventDate = String(formData.get("eventDate") ?? "").trim();
-
-  return {
-    title,
-    description: description.length ? description.slice(0, 2000) : null,
-    location: location.length ? location.slice(0, 200) : null,
-    eventDate: eventDate.length ? eventDate : null,
-  };
-}
-
-const RSVP_STATUSES = ["going", "maybe", "not_going"] as const;
-
-function isRsvpStatus(s: string): s is RsvpStatus {
-  return (RSVP_STATUSES as readonly string[]).includes(s);
-}
-
-function parseRsvp(formData: FormData) {
-  const name = String(formData.get("name") ?? "").trim();
-  if (name.length < 2 || name.length > 120) {
-    throw new Error("Name must be between 2 and 120 characters.");
-  }
-
-  const email = String(formData.get("email") ?? "").trim();
-  if (email.length < 3 || email.length > 320) {
-    throw new Error("Please enter a valid email.");
-  }
-
-  const status = String(formData.get("status") ?? "").trim();
-  if (!isRsvpStatus(status)) {
-    throw new Error("Invalid RSVP status.");
-  }
-
-  return { name, email, status };
-}
-
 export async function createEventAction(
   _prevState: ActionState,
   formData: FormData,
@@ -80,19 +40,23 @@ export async function createEventAction(
   try {
     const session = await getSession();
     const userId = session.data?.user?.id;
-    const input = parseEventForm(formData);
 
     if (!userId) {
       return actionError("You must be signed in to create an event.");
     }
 
+    const parsed = parseFormData(eventFormSchema, formData);
+    if (!parsed.success) {
+      return parsed.state;
+    }
+
     const created = await prisma.event.create({
       data: {
         ownerUserId: userId,
-        title: input.title,
-        description: input.description,
-        location: input.location,
-        eventDate: input.eventDate ? new Date(input.eventDate) : null,
+        title: parsed.data.title,
+        description: parsed.data.description,
+        location: parsed.data.location,
+        eventDate: parsed.data.eventDate ? new Date(parsed.data.eventDate) : null,
       },
     });
 
@@ -115,17 +79,21 @@ export async function updateEventAction(
   try {
     const session = await getSession();
     const userId = session.data?.user?.id;
-    const input = parseEventForm(formData);
+
+    const parsed = parseFormData(eventFormSchema, formData);
+    if (!parsed.success) {
+      return parsed.state;
+    }
 
     await requireEventOwner(eventId, userId);
 
     await prisma.event.update({
       where: { id: eventId },
       data: {
-        title: input.title,
-        description: input.description,
-        location: input.location,
-        eventDate: input.eventDate ? new Date(input.eventDate) : null,
+        title: parsed.data.title,
+        description: parsed.data.description,
+        location: parsed.data.location,
+        eventDate: parsed.data.eventDate ? new Date(parsed.data.eventDate) : null,
       },
     });
   } catch (error) {
@@ -195,7 +163,10 @@ export async function submitOrUpdateRsvpAction(
   formData: FormData,
 ): Promise<ActionState> {
   try {
-    const input = parseRsvp(formData);
+    const parsed = parseFormData(rsvpFormSchema, formData);
+    if (!parsed.success) {
+      return parsed.state;
+    }
 
     const invite = await prisma.eventInvite.findFirst({
       where: { token },
@@ -212,7 +183,7 @@ export async function submitOrUpdateRsvpAction(
     }
 
     const eventId = invite.event.id;
-    const emailNormalized = input.email.toLocaleLowerCase();
+    const emailNormalized = parsed.data.email.toLocaleLowerCase();
 
     await prisma.eventRsvp.upsert({
       where: {
@@ -224,14 +195,14 @@ export async function submitOrUpdateRsvpAction(
       create: {
         eventId,
         inviteId: invite.id,
-        name: input.name,
-        email: input.email,
+        name: parsed.data.name,
+        email: parsed.data.email,
         emailNormalized,
-        status: input.status as RsvpStatus,
+        status: parsed.data.status,
       },
       update: {
-        name: input.name,
-        status: input.status,
+        name: parsed.data.name,
+        status: parsed.data.status,
         respondedAt: new Date(),
       },
     });

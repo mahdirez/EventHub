@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { createInviteLinkAction, deleteEventAction } from "@/lib/actions/events";
+import { formatEventSchedule, formatRsvpStatus } from "@/lib/copy";
 import { DeleteEventDialog } from "./delete-event-dialog";
 import { CopyInviteLinkButton } from "./copy-invite-link-button";
 import { GenerateInviteForm } from "./generate-invite-form";
@@ -92,16 +93,12 @@ export async function EventDetailContent({
           <div className="text-2xl font-semibold tracking-tight">
             {event.title}
           </div>
-          <p>
-            {event.eventDate
-              ? new Date(event.eventDate).toLocaleString()
-              : "No Date Selected"}
-
-            {event.location ? ` - ${event.location}` : ""}
+          <p className="text-sm text-[var(--muted-foreground)]">
+            {formatEventSchedule(event.eventDate, event.location)}
           </p>
           {event.description && (
-            <p className=" max-w-2xl text-sm text-[var(--muted-foreground)]">
-              {event?.description}
+            <p className="max-w-2xl text-sm text-[var(--muted-foreground)]">
+              {event.description}
             </p>
           )}
         </div>
@@ -121,13 +118,15 @@ export async function EventDetailContent({
       <div className="flex flex-wrap gap-2 text-xs">
         <Badge>Going: {event.goingCount}</Badge>
         <Badge variant={"secondary"}>Maybe: {event.maybeCount}</Badge>
-        <Badge variant={"outline"}>Not Going: {event.notGoingCount}</Badge>
+        <Badge variant="outline">Not going: {event.notGoingCount}</Badge>
       </div>
       <Card>
-        <CardHeader>Invite Link</CardHeader>
+        <CardHeader>
+          <CardTitle>Invite link</CardTitle>
+        </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-[var(--muted-foreground)]">
-            share this link with guests so they can RSVP without creating an
+            Share this link with guests so they can RSVP without creating an
             account.
           </p>
           {inviteUrl ? (
@@ -170,11 +169,7 @@ export async function EventDetailContent({
                     <TableCell>{rsvp.name}</TableCell>
                     <TableCell>{rsvp.email}</TableCell>
                     <TableCell>
-                      <Badge>
-                        {rsvp.status === "not_going"
-                          ? "Not Going"
-                          : rsvp.status}
-                      </Badge>
+                      <Badge>{formatRsvpStatus(rsvp.status)}</Badge>
                     </TableCell>
                     <TableCell>{new Date(rsvp.respondedAt).toLocaleDateString()}</TableCell>
                   </TableRow>

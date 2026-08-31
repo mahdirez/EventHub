@@ -39,7 +39,7 @@ export default async function EditEventPage({
 
   return (
     <EventForm
-      title="Edit Event"
+      title="Edit event"
       submitLabel="Save changes"
       pendingLabel="Saving..."
       cancelHref={`/events/${event.id}`}

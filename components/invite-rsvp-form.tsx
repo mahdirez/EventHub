@@ -43,7 +43,7 @@ export function InviteRsvpForm({ action, submitted }: InviteRsvpFormProps) {
               <Input
                 id="name"
                 name="name"
-                placeholder="Your Name"
+                placeholder="Your name"
                 minLength={rsvpFormConstraints.name.minLength}
                 maxLength={rsvpFormConstraints.name.maxLength}
                 required

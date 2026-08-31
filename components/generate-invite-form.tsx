@@ -20,7 +20,7 @@ export function GenerateInviteForm({ action }: GenerateInviteFormProps) {
   return (
     <form action={formAction}>
       <FormSubmitButton pendingLabel="Generating...">
-        Generate Link
+        Generate link
       </FormSubmitButton>
     </form>
   );

@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { submitOrUpdateRsvpAction } from "@/lib/actions/events";
+import { formatEventSchedule } from "@/lib/copy";
 import { InviteRsvpForm } from "./invite-rsvp-form";
 
 export async function InviteRsvpContent({
@@ -52,9 +53,7 @@ export async function InviteRsvpContent({
           </Badge>
           <CardTitle>{event.title}</CardTitle>
           <p className="text-sm text-[var(--muted-foreground)]">
-            {event.eventDate
-              ? new Date(event.eventDate).toLocaleString()
-              : "No date selected."}
+            {formatEventSchedule(event.eventDate, event.location)}
           </p>
           {event.description ? (
             <p className="text-sm text-[var(--muted-foreground)]">

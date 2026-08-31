@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import type { RsvpStatus as PrismaRsvpStatus } from "@/app/generated/prisma/enums";
+import { formatEventSchedule } from "@/lib/copy";
 import { Badge } from "./ui/badge";
 
 export function countByStatus(rsvps: { status: PrismaRsvpStatus }[]) {
@@ -45,7 +46,7 @@ export async function DashboardContent({ userId }: { userId: string }) {
     <div className="flex flex-1 flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight ">Your Event</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Your events</h1>
           <p className="text-sm text-[var(--muted-foreground)]">
             Track attendance responses and manage invite links.
           </p>
@@ -54,8 +55,6 @@ export async function DashboardContent({ userId }: { userId: string }) {
           <Link href="/events/new">Create event</Link>
         </Button>
       </div>
-
-      {/* {list of events} */}
 
       {events.length === 0 ? (
         <Card>
@@ -76,21 +75,18 @@ export async function DashboardContent({ userId }: { userId: string }) {
                 <div className="flex items-center justify-between gap-2">
                   <CardTitle className="text-lg">{event.title}</CardTitle>
                   <Button asChild size="sm">
-                    <Link href={`/events/${event.id}`}>View Details</Link>
+                    <Link href={`/events/${event.id}`}>View details</Link>
                   </Button>
                 </div>
                 <div className="flex flex-wrap gap-2 text-xs">
                   <Badge variant={"secondary"}>Going: {event.goingCount}</Badge>
                   <Badge variant={"secondary"}>Maybe: {event.maybeCount}</Badge>
-                  <Badge variant={"secondary"}>
-                    Not Going: {event.notGoingCount}
+                  <Badge variant="secondary">
+                    Not going: {event.notGoingCount}
                   </Badge>
                 </div>
-                <p>
-                  {event.eventDate
-                    ? new Date(event.eventDate).toLocaleString()
-                    : "No date"}
-                  {event.location ? ` - ${event.location}` : ""}
+                <p className="text-sm text-[var(--muted-foreground)]">
+                  {formatEventSchedule(event.eventDate, event.location)}
                 </p>
               </CardHeader>
             </Card>

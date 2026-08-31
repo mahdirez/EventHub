@@ -4,7 +4,7 @@ import { createEventAction } from "@/lib/actions/events";
 export default function NewEventPage() {
   return (
     <EventForm
-      title="Create Event"
+      title="Create event"
       submitLabel="Create event"
       pendingLabel="Creating..."
       cancelHref="/dashboard"

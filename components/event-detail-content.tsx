@@ -7,6 +7,7 @@ import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { createInviteLinkAction, deleteEventAction } from "@/lib/actions/events";
 import { DeleteEventDialog } from "./delete-event-dialog";
+import { CopyInviteLinkButton } from "./copy-invite-link-button";
 import { GenerateInviteForm } from "./generate-invite-form";
 import {
   Table,
@@ -82,8 +83,8 @@ export async function EventDetailContent({
   const deleteEventActionForEvent = deleteEventAction.bind(null, event.id);
 
   const inviteUrl = event.inviteToken
-    ? `${process.env.NEXT_PUBLIC_APP_URL ?? ""}/invite/${event.inviteToken}`
-    : event.inviteToken;
+    ? `/invite/${event.inviteToken}`
+    : null;
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -130,15 +131,14 @@ export async function EventDetailContent({
             account.
           </p>
           {inviteUrl ? (
-            <div
-              className={
-                "rounded-md border border-[var(--border)] bg-[var(--surface)] p-3 text-sm"
-              }
-            >
-              {inviteUrl}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="min-w-0 flex-1 rounded-md border border-[var(--border)] bg-[var(--surface)] p-3 text-sm break-all">
+                {inviteUrl}
+              </div>
+              <CopyInviteLinkButton token={event.inviteToken} />
             </div>
           ) : (
-            <p className={"text-sm text-[var-(--muted-foreground)]"}>
+            <p className="text-sm text-[var(--muted-foreground)]">
               No invite link generated yet.
             </p>
           )}

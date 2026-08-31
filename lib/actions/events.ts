@@ -11,6 +11,7 @@ import {
 import { eventFormSchema } from "@/lib/validations/event";
 import { parseFormData } from "@/lib/validations/parse-form-data";
 import { rsvpFormSchema } from "@/lib/validations/rsvp";
+import { canRsvpGoing } from "@/lib/event-capacity";
 import { getSession } from "../auth/server";
 import { prisma } from "../prisma";
 
@@ -57,6 +58,7 @@ export async function createEventAction(
         description: parsed.data.description,
         location: parsed.data.location,
         eventDate: parsed.data.eventDate ? new Date(parsed.data.eventDate) : null,
+        capacity: parsed.data.capacity,
       },
     });
 
@@ -85,6 +87,18 @@ export async function updateEventAction(
 
     await requireEventOwner(eventId, userId);
 
+    if (parsed.data.capacity != null) {
+      const goingCount = await prisma.eventRsvp.count({
+        where: { eventId, status: "going" },
+      });
+
+      if (parsed.data.capacity < goingCount) {
+        return actionError(
+          `Capacity cannot be less than the current number of going RSVPs (${goingCount}).`,
+        );
+      }
+    }
+
     await prisma.event.update({
       where: { id: eventId },
       data: {
@@ -92,6 +106,7 @@ export async function updateEventAction(
         description: parsed.data.description,
         location: parsed.data.location,
         eventDate: parsed.data.eventDate ? new Date(parsed.data.eventDate) : null,
+        capacity: parsed.data.capacity,
       },
     });
   } catch (error) {
@@ -171,7 +186,7 @@ export async function submitOrUpdateRsvpAction(
       select: {
         id: true,
         event: {
-          select: { id: true },
+          select: { id: true, capacity: true },
         },
       },
     });
@@ -182,6 +197,34 @@ export async function submitOrUpdateRsvpAction(
 
     const eventId = invite.event.id;
     const emailNormalized = parsed.data.email.toLocaleLowerCase();
+
+    if (parsed.data.status === "going") {
+      const existingRsvp = await prisma.eventRsvp.findUnique({
+        where: {
+          eventId_emailNormalized: {
+            eventId,
+            emailNormalized,
+          },
+        },
+        select: { status: true },
+      });
+
+      const goingCount = await prisma.eventRsvp.count({
+        where: { eventId, status: "going" },
+      });
+
+      if (
+        !canRsvpGoing(
+          invite.event.capacity,
+          goingCount,
+          existingRsvp?.status,
+        )
+      ) {
+        return actionError(
+          "This event is at capacity. Please choose Maybe or Not going.",
+        );
+      }
+    }
 
     await prisma.eventRsvp.upsert({
       where: {

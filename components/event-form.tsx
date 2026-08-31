@@ -26,6 +26,7 @@ type EventFormValues = {
   description?: string | null;
   location?: string | null;
   eventDate?: Date | string | null;
+  capacity?: number | null;
 };
 
 type EventFormProps = {
@@ -118,6 +119,28 @@ export function EventForm({
                       defaultValue={toDatetimeLocalValue(defaultValues?.eventDate)}
                     />
                     <FieldError errors={fieldErrorMessages(state?.fieldErrors, "eventDate")} />
+                  </Field>
+                </FieldGroup>
+              </FieldSet>
+              <FieldSet>
+                <FieldGroup>
+                  <Field data-invalid={Boolean(state?.fieldErrors?.capacity)}>
+                    <FieldLabel htmlFor="capacity">Capacity (optional)</FieldLabel>
+                    <Input
+                      id="capacity"
+                      name="capacity"
+                      type="number"
+                      min={eventFormConstraints.capacity.min}
+                      max={eventFormConstraints.capacity.max}
+                      step={1}
+                      placeholder="Unlimited"
+                      defaultValue={
+                        defaultValues?.capacity != null
+                          ? String(defaultValues.capacity)
+                          : ""
+                      }
+                    />
+                    <FieldError errors={fieldErrorMessages(state?.fieldErrors, "capacity")} />
                   </Field>
                 </FieldGroup>
               </FieldSet>

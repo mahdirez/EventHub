@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useActionToast } from "@/hooks/use-action-toast";
 import type { ActionState } from "@/lib/action-state";
+import { canRsvpGoing } from "@/lib/event-capacity";
 import { getStoredRsvp, setStoredRsvp, type StoredRsvp } from "@/lib/rsvp-storage";
 import { fieldErrorMessages } from "@/lib/validations/parse-form-data";
 import { rsvpFormConstraints } from "@/lib/validations/rsvp";
@@ -25,6 +26,8 @@ type InviteRsvpFormProps = {
   ) => Promise<ActionState>;
   submitted: boolean;
   existingRsvp?: StoredRsvp | null;
+  capacity?: number | null;
+  goingCount: number;
 };
 
 export function InviteRsvpForm({
@@ -32,6 +35,8 @@ export function InviteRsvpForm({
   action,
   submitted,
   existingRsvp,
+  capacity = null,
+  goingCount,
 }: InviteRsvpFormProps) {
   const [state, formAction] = useActionState(action, null);
   useActionToast(state);
@@ -53,6 +58,13 @@ export function InviteRsvpForm({
   }, [existingRsvp, token]);
 
   const formKey = defaults?.email ?? "new";
+  const canSelectGoing = canRsvpGoing(capacity, goingCount, defaults?.status);
+  const defaultStatus =
+    defaults?.status && (defaults.status !== "going" || canSelectGoing)
+      ? defaults.status
+      : canSelectGoing
+        ? "going"
+        : "maybe";
 
   return (
     <>
@@ -65,6 +77,12 @@ export function InviteRsvpForm({
         <p className="mb-4 text-sm text-[var(--muted-foreground)]">
           We found your previous RSVP for this event. Update your response
           below if anything changed.
+        </p>
+      ) : null}
+      {!canSelectGoing ? (
+        <p className="mb-4 text-sm text-[var(--muted-foreground)]">
+          This event is at capacity for Going responses. You can still RSVP as
+          Maybe or Not going.
         </p>
       ) : null}
       <form key={formKey} action={formAction} noValidate>
@@ -106,10 +124,12 @@ export function InviteRsvpForm({
                 id="status"
                 name="status"
                 required
-                defaultValue={defaults?.status ?? "going"}
+                defaultValue={defaultStatus}
                 className="flex h-10 w-full rounded-md border border-[var(--border)] bg-[var(--surface)] px-3"
               >
-                <option value="going">Going</option>
+                <option value="going" disabled={!canSelectGoing}>
+                  Going{!canSelectGoing ? " (full)" : ""}
+                </option>
                 <option value="maybe">Maybe</option>
                 <option value="not_going">Not going</option>
               </select>

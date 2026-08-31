@@ -8,6 +8,7 @@ import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { EmptyState } from "./empty-state";
 import { createInviteLinkAction, deleteEventAction } from "@/lib/actions/events";
+import { formatCapacityLabel } from "@/lib/event-capacity";
 import { formatEventSchedule, formatRsvpStatus } from "@/lib/copy";
 import { DeleteEventDialog } from "./delete-event-dialog";
 import { CopyInviteLinkButton } from "./copy-invite-link-button";
@@ -36,6 +37,7 @@ export async function EventDetailContent({
       description: true,
       location: true,
       eventDate: true,
+      capacity: true,
       invites: { select: { token: true } },
       rsvps: { select: { status: true } },
     },
@@ -53,6 +55,7 @@ export async function EventDetailContent({
     description: row.description,
     location: row.location,
     eventDate: row.eventDate ? row.eventDate.toISOString() : null,
+    capacity: row.capacity,
     inviteToken: row.invites?.token ?? null,
     goingCount: counts.goingCount,
     maybeCount: counts.maybeCount,
@@ -121,6 +124,11 @@ export async function EventDetailContent({
         <Badge>Going: {event.goingCount}</Badge>
         <Badge variant={"secondary"}>Maybe: {event.maybeCount}</Badge>
         <Badge variant="outline">Not going: {event.notGoingCount}</Badge>
+        {formatCapacityLabel(event.capacity, event.goingCount) ? (
+          <Badge variant="outline">
+            Capacity: {formatCapacityLabel(event.capacity, event.goingCount)}
+          </Badge>
+        ) : null}
       </div>
       <Card>
         <CardHeader>

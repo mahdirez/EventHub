@@ -25,6 +25,7 @@ model Event {
   description String?
   location    String?
   eventDate   DateTime? @map("event_date") @db.Timestamptz(6)
+  capacity    Int?      @map("capacity")
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 

@@ -9,6 +9,7 @@ export const eventFormConstraints = {
   title: { minLength: 3, maxLength: 120 },
   description: { maxLength: 2000 },
   location: { maxLength: 200 },
+  capacity: { min: 1, max: 10000 },
 } as const;
 
 export const eventFormSchema = z.object({
@@ -52,6 +53,31 @@ export const eventFormSchema = z.object({
             value === null || !Number.isNaN(new Date(value).getTime()),
           "Please enter a valid date and time.",
         ),
+    ),
+  capacity: z
+    .string()
+    .trim()
+    .transform((value) => (value.length ? value : null))
+    .pipe(
+      z
+        .string()
+        .nullable()
+        .refine(
+          (value) => {
+            if (value === null) {
+              return true;
+            }
+
+            const parsed = Number(value);
+            return (
+              Number.isInteger(parsed) &&
+              parsed >= eventFormConstraints.capacity.min &&
+              parsed <= eventFormConstraints.capacity.max
+            );
+          },
+          `Capacity must be a whole number between ${eventFormConstraints.capacity.min} and ${eventFormConstraints.capacity.max}.`,
+        )
+        .transform((value) => (value === null ? null : Number(value))),
     ),
 });
 

@@ -3,7 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { submitOrUpdateRsvpAction } from "@/lib/actions/events";
+import { formatCapacityLabel } from "@/lib/event-capacity";
 import { formatEventSchedule } from "@/lib/copy";
+import { countByStatus } from "./dashboard-content";
 import { InviteRsvpForm } from "./invite-rsvp-form";
 
 export async function InviteRsvpContent({
@@ -27,6 +29,8 @@ export async function InviteRsvpContent({
           description: true,
           location: true,
           eventDate: true,
+          capacity: true,
+          rsvps: { select: { status: true } },
         },
       },
     },
@@ -37,6 +41,8 @@ export async function InviteRsvpContent({
   }
 
   const e = row.event;
+  const { goingCount } = countByStatus(e.rsvps);
+  const capacityLabel = formatCapacityLabel(e.capacity, goingCount);
   const event = {
     title: e.title,
     description: e.description,
@@ -76,6 +82,11 @@ export async function InviteRsvpContent({
               {event.description}
             </p>
           ) : null}
+          {capacityLabel ? (
+            <Badge variant="outline" className="w-fit">
+              Capacity: {capacityLabel}
+            </Badge>
+          ) : null}
         </CardHeader>
         <CardContent>
           <InviteRsvpForm
@@ -83,6 +94,8 @@ export async function InviteRsvpContent({
             action={submitRsvpForToken}
             submitted={submitted}
             existingRsvp={existingRsvp}
+            capacity={e.capacity}
+            goingCount={goingCount}
           />
         </CardContent>
       </Card>

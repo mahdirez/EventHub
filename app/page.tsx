@@ -9,6 +9,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { homeMetadata } from "@/lib/metadata";
+
+export const metadata = homeMetadata;
 
 export default function Home() {
   return (

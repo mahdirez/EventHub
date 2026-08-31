@@ -1,9 +1,29 @@
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { EventForm } from "@/components/event-form";
 import { updateEventAction } from "@/lib/actions/events";
 import { getSession } from "@/lib/auth/server";
+import { createPageMetadata } from "@/lib/metadata";
 import { prisma } from "@/lib/prisma";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ eventId: string }>;
+}): Promise<Metadata> {
+  const { eventId } = await params;
+
+  const event = await prisma.event.findUnique({
+    where: { id: eventId },
+    select: { title: true },
+  });
+
+  return createPageMetadata({
+    title: event ? `Edit ${event.title}` : "Edit event",
+    description: "Update your event title, date, location, and details.",
+  });
+}
 
 export default async function EditEventPage({
   params,

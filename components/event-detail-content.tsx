@@ -1,10 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
+import { Link2Icon, UsersIcon } from "lucide-react";
 import { countByStatus } from "./dashboard-content";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { EmptyState } from "./empty-state";
 import { createInviteLinkAction, deleteEventAction } from "@/lib/actions/events";
 import { formatEventSchedule, formatRsvpStatus } from "@/lib/copy";
 import { DeleteEventDialog } from "./delete-event-dialog";
@@ -137,11 +139,19 @@ export async function EventDetailContent({
               <CopyInviteLinkButton token={event.inviteToken} />
             </div>
           ) : (
-            <p className="text-sm text-[var(--muted-foreground)]">
-              No invite link generated yet.
-            </p>
+            <EmptyState
+              icon={Link2Icon}
+              title="No invite link yet"
+              description="Generate a link and share it with guests so they can RSVP without an account."
+              action={
+                <GenerateInviteForm action={createInviteActionForEvent} />
+              }
+              className="py-6"
+            />
           )}
-          <GenerateInviteForm action={createInviteActionForEvent} />
+          {inviteUrl ? (
+            <GenerateInviteForm action={createInviteActionForEvent} />
+          ) : null}
         </CardContent>
       </Card>
       <Card>
@@ -150,9 +160,16 @@ export async function EventDetailContent({
         </CardHeader>
         <CardContent>
           {rsvps.length === 0 ? (
-            <p className="text-sm text-[var(--muted-foreground)]">
-              No attendees yet.
-            </p>
+            <EmptyState
+              icon={UsersIcon}
+              title="No RSVPs yet"
+              description={
+                inviteUrl
+                  ? "Share your invite link with guests. Their responses will appear here as they RSVP."
+                  : "Generate an invite link first, then share it with guests to start collecting responses."
+              }
+              className="py-6"
+            />
           ) : (
             <Table>
               <TableHeader>

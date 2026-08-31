@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
+import { CalendarDaysIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { EmptyState } from "./empty-state";
 import type { RsvpStatus as PrismaRsvpStatus } from "@/app/generated/prisma/enums";
 import { formatEventSchedule } from "@/lib/copy";
 import { Badge } from "./ui/badge";
@@ -58,13 +60,17 @@ export async function DashboardContent({ userId }: { userId: string }) {
 
       {events.length === 0 ? (
         <Card>
-          <CardHeader>
-            <CardTitle>No events yet</CardTitle>
-          </CardHeader>
           <CardContent>
-            <p className="text-sm text-[var(--muted-foreground)]">
-              Create your first event to start collecting RSVPs.
-            </p>
+            <EmptyState
+              icon={CalendarDaysIcon}
+              title="No events yet"
+              description="Create your first event, generate an invite link, and start collecting RSVPs from guests."
+              action={
+                <Button asChild>
+                  <Link href="/events/new">Create your first event</Link>
+                </Button>
+              }
+            />
           </CardContent>
         </Card>
       ) : (

@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { Link2Icon, UsersIcon } from "lucide-react";
+import { Link2Icon, UsersIcon, DownloadIcon } from "lucide-react";
 import { countByStatus } from "./dashboard-content";
 import { Button } from "./ui/button";
 import Link from "next/link";
@@ -155,8 +155,21 @@ export async function EventDetailContent({
         </CardContent>
       </Card>
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between gap-3">
           <CardTitle>Attendees</CardTitle>
+          {rsvps.length > 0 ? (
+            <Button asChild variant="outline" size="sm">
+              <a href={`/api/events/${event.id}/attendees/export`}>
+                <DownloadIcon />
+                Export CSV
+              </a>
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" disabled>
+              <DownloadIcon />
+              Export CSV
+            </Button>
+          )}
         </CardHeader>
         <CardContent>
           {rsvps.length === 0 ? (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 
 import { FormSubmitButton } from "@/components/form-submit-button";
 import {
@@ -13,20 +13,46 @@ import {
 import { Input } from "@/components/ui/input";
 import { useActionToast } from "@/hooks/use-action-toast";
 import type { ActionState } from "@/lib/action-state";
+import { getStoredRsvp, setStoredRsvp, type StoredRsvp } from "@/lib/rsvp-storage";
 import { fieldErrorMessages } from "@/lib/validations/parse-form-data";
 import { rsvpFormConstraints } from "@/lib/validations/rsvp";
 
 type InviteRsvpFormProps = {
+  token: string;
   action: (
     prevState: ActionState,
     formData: FormData,
   ) => Promise<ActionState>;
   submitted: boolean;
+  existingRsvp?: StoredRsvp | null;
 };
 
-export function InviteRsvpForm({ action, submitted }: InviteRsvpFormProps) {
+export function InviteRsvpForm({
+  token,
+  action,
+  submitted,
+  existingRsvp,
+}: InviteRsvpFormProps) {
   const [state, formAction] = useActionState(action, null);
   useActionToast(state);
+  const [defaults, setDefaults] = useState<StoredRsvp | null>(
+    existingRsvp ?? null,
+  );
+
+  useEffect(() => {
+    if (existingRsvp) {
+      setDefaults(existingRsvp);
+      setStoredRsvp(token, existingRsvp);
+      return;
+    }
+
+    const stored = getStoredRsvp(token);
+    if (stored) {
+      setDefaults(stored);
+    }
+  }, [existingRsvp, token]);
+
+  const formKey = defaults?.email ?? "new";
 
   return (
     <>
@@ -35,7 +61,13 @@ export function InviteRsvpForm({ action, submitted }: InviteRsvpFormProps) {
           Your RSVP has been recorded.
         </p>
       ) : null}
-      <form action={formAction} noValidate>
+      {defaults ? (
+        <p className="mb-4 text-sm text-[var(--muted-foreground)]">
+          We found your previous RSVP for this event. Update your response
+          below if anything changed.
+        </p>
+      ) : null}
+      <form key={formKey} action={formAction} noValidate>
         <FieldGroup>
           <FieldSet>
             <Field data-invalid={Boolean(state?.fieldErrors?.name)}>
@@ -44,6 +76,7 @@ export function InviteRsvpForm({ action, submitted }: InviteRsvpFormProps) {
                 id="name"
                 name="name"
                 placeholder="Your name"
+                defaultValue={defaults?.name ?? ""}
                 minLength={rsvpFormConstraints.name.minLength}
                 maxLength={rsvpFormConstraints.name.maxLength}
                 required
@@ -59,6 +92,7 @@ export function InviteRsvpForm({ action, submitted }: InviteRsvpFormProps) {
                 name="email"
                 type="email"
                 placeholder="you@example.com"
+                defaultValue={defaults?.email ?? ""}
                 maxLength={rsvpFormConstraints.email.maxLength}
                 required
               />
@@ -72,7 +106,7 @@ export function InviteRsvpForm({ action, submitted }: InviteRsvpFormProps) {
                 id="status"
                 name="status"
                 required
-                defaultValue="going"
+                defaultValue={defaults?.status ?? "going"}
                 className="flex h-10 w-full rounded-md border border-[var(--border)] bg-[var(--surface)] px-3"
               >
                 <option value="going">Going</option>
@@ -83,7 +117,7 @@ export function InviteRsvpForm({ action, submitted }: InviteRsvpFormProps) {
             </Field>
           </FieldSet>
           <FormSubmitButton className="w-fit" pendingLabel="Submitting...">
-            Submit RSVP
+            {defaults ? "Update RSVP" : "Submit RSVP"}
           </FormSubmitButton>
         </FieldGroup>
       </form>

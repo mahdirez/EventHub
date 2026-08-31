@@ -9,9 +9,11 @@ import { InviteRsvpForm } from "./invite-rsvp-form";
 export async function InviteRsvpContent({
   token,
   submitted,
+  email,
 }: {
   token: string;
   submitted: boolean;
+  email?: string;
 }) {
   const row = await prisma.eventInvite.findFirst({
     where: {
@@ -44,6 +46,20 @@ export async function InviteRsvpContent({
 
   const submitRsvpForToken = submitOrUpdateRsvpAction.bind(null, token);
 
+  const existingRsvp = email
+    ? await prisma.eventRsvp.findFirst({
+        where: {
+          eventId: e.id,
+          emailNormalized: email.trim().toLocaleLowerCase(),
+        },
+        select: {
+          name: true,
+          email: true,
+          status: true,
+        },
+      })
+    : null;
+
   return (
     <div className="mx-auto w-full max-w-2xl">
       <Card>
@@ -62,7 +78,12 @@ export async function InviteRsvpContent({
           ) : null}
         </CardHeader>
         <CardContent>
-          <InviteRsvpForm action={submitRsvpForToken} submitted={submitted} />
+          <InviteRsvpForm
+            token={token}
+            action={submitRsvpForToken}
+            submitted={submitted}
+            existingRsvp={existingRsvp}
+          />
         </CardContent>
       </Card>
     </div>

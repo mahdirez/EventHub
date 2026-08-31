@@ -156,11 +156,15 @@ export async function submitOrUpdateRsvpAction(
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  let submittedEmail: string;
+
   try {
     const parsed = parseFormData(rsvpFormSchema, formData);
     if (!parsed.success) {
       return parsed.state;
     }
+
+    submittedEmail = parsed.data.email;
 
     const invite = await prisma.eventInvite.findFirst({
       where: { token },
@@ -204,5 +208,7 @@ export async function submitOrUpdateRsvpAction(
     return actionError(getErrorMessage(error));
   }
 
-  redirect(`/invite/${token}?submitted=1`);
+  redirect(
+    `/invite/${token}?submitted=1&email=${encodeURIComponent(submittedEmail)}`,
+  );
 }

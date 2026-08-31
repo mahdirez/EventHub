@@ -35,12 +35,16 @@ export default async function InvitePage({
   searchParams,
 }: {
   params: Promise<{ token: string }>;
-  searchParams: Promise<{ submitted?: string }>;
+  searchParams: Promise<{ submitted?: string; email?: string }>;
 }) {
   const { token } = await params;
   const query = await searchParams;
 
   return (
-    <InviteRsvpContent token={token} submitted={query.submitted === "1"} />
+    <InviteRsvpContent
+      token={token}
+      submitted={query.submitted === "1"}
+      email={query.email}
+    />
   );
 }

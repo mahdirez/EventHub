@@ -19,9 +19,6 @@ export function GenerateInviteForm({ action }: GenerateInviteFormProps) {
 
   return (
     <form action={formAction}>
-      {state?.error ? (
-        <p className="mb-3 text-sm text-destructive">{state.error}</p>
-      ) : null}
       <FormSubmitButton pendingLabel="Generating...">
         Generate Link
       </FormSubmitButton>

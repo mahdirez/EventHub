@@ -121,9 +121,6 @@ export function EventForm({
                   </Field>
                 </FieldGroup>
               </FieldSet>
-              {state?.error && !state.fieldErrors ? (
-                <p className="text-sm text-destructive">{state.error}</p>
-              ) : null}
               <div className="flex items-center gap-3">
                 <FormSubmitButton pendingLabel={pendingLabel}>
                   {submitLabel}

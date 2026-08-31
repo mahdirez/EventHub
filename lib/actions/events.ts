@@ -66,9 +66,7 @@ export async function createEventAction(
   }
 
   revalidatePath("/dashboard");
-  redirect(
-    `/events/${createdId}?success=${encodeURIComponent("Event created successfully")}`,
-  );
+  redirect(`/events/${createdId}`);
 }
 
 export async function updateEventAction(
@@ -102,9 +100,7 @@ export async function updateEventAction(
 
   revalidatePath("/dashboard");
   revalidatePath(`/events/${eventId}`);
-  redirect(
-    `/events/${eventId}?success=${encodeURIComponent("Event updated successfully")}`,
-  );
+  redirect(`/events/${eventId}`);
 }
 
 export async function deleteEventAction(
@@ -126,9 +122,7 @@ export async function deleteEventAction(
   }
 
   revalidatePath("/dashboard");
-  redirect(
-    `/dashboard?success=${encodeURIComponent("Event deleted successfully")}`,
-  );
+  redirect("/dashboard");
 }
 
 export async function createInviteLinkAction(
@@ -210,7 +204,5 @@ export async function submitOrUpdateRsvpAction(
     return actionError(getErrorMessage(error));
   }
 
-  redirect(
-    `/invite/${token}?submitted=1&success=${encodeURIComponent("Your RSVP has been recorded")}`,
-  );
+  redirect(`/invite/${token}?submitted=1`);
 }

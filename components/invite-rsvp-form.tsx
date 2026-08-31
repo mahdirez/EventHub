@@ -82,9 +82,6 @@ export function InviteRsvpForm({ action, submitted }: InviteRsvpFormProps) {
               <FieldError errors={fieldErrorMessages(state?.fieldErrors, "status")} />
             </Field>
           </FieldSet>
-          {state?.error && !state.fieldErrors ? (
-            <p className="text-sm text-destructive">{state.error}</p>
-          ) : null}
           <FormSubmitButton className="w-fit" pendingLabel="Submitting...">
             Submit RSVP
           </FormSubmitButton>

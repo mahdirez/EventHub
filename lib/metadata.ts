@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { siteConfig } from "@/lib/site";
+import type { Dictionary, Translator } from "@/lib/i18n";
 
 type PageMetadataOptions = {
   title: string;
@@ -9,7 +9,7 @@ type PageMetadataOptions = {
 
 export function createPageMetadata({
   title,
-  description = siteConfig.description,
+  description,
 }: PageMetadataOptions): Metadata {
   return {
     title,
@@ -17,34 +17,38 @@ export function createPageMetadata({
   };
 }
 
-const authPageTitles: Record<string, string> = {
-  callback: "Auth callback",
-  "email-otp": "Email verification",
-  "forgot-password": "Forgot password",
-  "magic-link": "Magic link",
-  "recover-account": "Recover account",
-  "reset-password": "Reset password",
-  "sign-in": "Sign in",
-  "sign-out": "Sign out",
-  "sign-up": "Create account",
-  "two-factor": "Two-factor authentication",
-  "accept-invitation": "Accept invitation",
+const authPageTitleKeys: Record<string, keyof Dictionary["auth"]> = {
+  callback: "callback",
+  "email-otp": "emailOtp",
+  "forgot-password": "forgotPassword",
+  "magic-link": "magicLink",
+  "recover-account": "recoverAccount",
+  "reset-password": "resetPassword",
+  "sign-in": "signIn",
+  "sign-out": "signOut",
+  "sign-up": "signUp",
+  "two-factor": "twoFactor",
+  "accept-invitation": "acceptInvitation",
 };
 
-const accountPageTitles: Record<string, string> = {
-  settings: "Account settings",
-  security: "Security",
-  teams: "Teams",
-  "api-keys": "API keys",
-  organizations: "Organizations",
+const accountPageTitleKeys: Record<string, keyof Dictionary["account"]> = {
+  settings: "settings",
+  security: "security",
+  teams: "teams",
+  "api-keys": "apiKeys",
+  organizations: "organizations",
 };
 
-export function getAuthPageTitle(path: string): string {
-  return authPageTitles[path] ?? titleFromPath(path);
+export function getAuthPageTitle(path: string, t: Translator): string {
+  const key = authPageTitleKeys[path];
+
+  return key ? t(`auth.${key}`) : titleFromPath(path);
 }
 
-export function getAccountPageTitle(path: string): string {
-  return accountPageTitles[path] ?? titleFromPath(path);
+export function getAccountPageTitle(path: string, t: Translator): string {
+  const key = accountPageTitleKeys[path];
+
+  return key ? t(`account.${key}`) : titleFromPath(path);
 }
 
 function titleFromPath(path: string): string {
@@ -53,10 +57,3 @@ function titleFromPath(path: string): string {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(" ");
 }
-
-export const homeMetadata: Metadata = {
-  title: {
-    absolute: siteConfig.name,
-  },
-  description: siteConfig.description,
-};

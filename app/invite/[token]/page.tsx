@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { InviteRsvpContent } from "@/components/invite-rsvp-content";
 import { createPageMetadata } from "@/lib/metadata";
+import { getTranslations } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
 
 export async function generateMetadata({
@@ -10,6 +11,7 @@ export async function generateMetadata({
   params: Promise<{ token: string }>;
 }): Promise<Metadata> {
   const { token } = await params;
+  const { t } = await getTranslations();
 
   const invite = await prisma.eventInvite.findFirst({
     where: { token },
@@ -23,10 +25,10 @@ export async function generateMetadata({
   const eventTitle = invite?.event.title;
 
   return createPageMetadata({
-    title: eventTitle ? `RSVP · ${eventTitle}` : "RSVP",
+    title: eventTitle ? `${t("rsvp.badge")} · ${eventTitle}` : t("rsvp.badge"),
     description: eventTitle
-      ? `Respond to ${eventTitle} on EventHub.`
-      : "Submit your RSVP for this event.",
+      ? t("rsvp.metadataFor", { title: eventTitle })
+      : t("rsvp.metadataDescription"),
   });
 }
 

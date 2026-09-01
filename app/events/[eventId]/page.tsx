@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { EventDetailContent } from "@/components/event-detail-content";
 import { getSession } from "@/lib/auth/server";
 import { createPageMetadata } from "@/lib/metadata";
+import { getTranslations } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 
@@ -11,6 +12,7 @@ export async function generateMetadata({
   params: Promise<{ eventId: string }>;
 }): Promise<Metadata> {
   const { eventId } = await params;
+  const { t } = await getTranslations();
 
   const event = await prisma.event.findUnique({
     where: { id: eventId },
@@ -18,10 +20,10 @@ export async function generateMetadata({
   });
 
   return createPageMetadata({
-    title: event?.title ?? "Event details",
+    title: event?.title ?? t("common.viewDetails"),
     description: event
-      ? `Manage invite links and RSVPs for ${event.title}.`
-      : "View event details, invite links, and attendee responses.",
+      ? t("event.metadata.detailsFor", { title: event.title })
+      : t("event.metadata.detailsDescription"),
   });
 }
 

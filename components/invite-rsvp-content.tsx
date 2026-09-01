@@ -6,6 +6,7 @@ import { submitOrUpdateRsvpAction } from "@/lib/actions/events";
 import { formatCapacityLabel } from "@/lib/event-capacity";
 import { formatEventSchedule } from "@/lib/copy";
 import { countByStatus } from "./dashboard-content";
+import { getTranslations } from "@/lib/i18n/server";
 import { InviteRsvpForm } from "./invite-rsvp-form";
 
 export async function InviteRsvpContent({
@@ -17,6 +18,8 @@ export async function InviteRsvpContent({
   submitted: boolean;
   email?: string;
 }) {
+  const { t, dictionary } = await getTranslations();
+
   const row = await prisma.eventInvite.findFirst({
     where: {
       token,
@@ -42,7 +45,11 @@ export async function InviteRsvpContent({
 
   const e = row.event;
   const { goingCount } = countByStatus(e.rsvps);
-  const capacityLabel = formatCapacityLabel(e.capacity, goingCount);
+  const capacityLabel = formatCapacityLabel(
+    e.capacity,
+    goingCount,
+    t("badges.capacity"),
+  );
   const event = {
     title: e.title,
     description: e.description,
@@ -70,12 +77,16 @@ export async function InviteRsvpContent({
     <div className="mx-auto w-full max-w-2xl">
       <Card>
         <CardHeader className="space-y-3">
-          <Badge variant={"secondary"} className="w-fit">
-            RSVP
+          <Badge variant="secondary" className="w-fit">
+            {t("rsvp.badge")}
           </Badge>
           <CardTitle>{event.title}</CardTitle>
           <p className="text-sm text-[var(--muted-foreground)]">
-            {formatEventSchedule(event.eventDate, event.location)}
+            {formatEventSchedule(
+              event.eventDate,
+              dictionary.common.noDateSet,
+              event.location,
+            )}
           </p>
           {event.description ? (
             <p className="text-sm text-[var(--muted-foreground)]">
@@ -84,7 +95,7 @@ export async function InviteRsvpContent({
           ) : null}
           {capacityLabel ? (
             <Badge variant="outline" className="w-fit">
-              Capacity: {capacityLabel}
+              {t("common.capacity")}: {capacityLabel}
             </Badge>
           ) : null}
         </CardHeader>

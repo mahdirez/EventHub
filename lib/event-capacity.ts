@@ -24,10 +24,13 @@ export function canRsvpGoing(
 export function formatCapacityLabel(
   capacity: number | null | undefined,
   goingCount: number,
+  template: string,
 ): string | null {
   if (capacity == null) {
     return null;
   }
 
-  return `${goingCount} / ${capacity} going`;
+  return template
+    .replace("{going}", String(goingCount))
+    .replace("{capacity}", String(capacity));
 }

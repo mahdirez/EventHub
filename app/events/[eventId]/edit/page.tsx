@@ -5,6 +5,7 @@ import { EventForm } from "@/components/event-form";
 import { updateEventAction } from "@/lib/actions/events";
 import { getSession } from "@/lib/auth/server";
 import { createPageMetadata } from "@/lib/metadata";
+import { getTranslations } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
 
 export async function generateMetadata({
@@ -13,6 +14,7 @@ export async function generateMetadata({
   params: Promise<{ eventId: string }>;
 }): Promise<Metadata> {
   const { eventId } = await params;
+  const { t } = await getTranslations();
 
   const event = await prisma.event.findUnique({
     where: { id: eventId },
@@ -20,8 +22,8 @@ export async function generateMetadata({
   });
 
   return createPageMetadata({
-    title: event ? `Edit ${event.title}` : "Edit event",
-    description: "Update your event title, date, location, and details.",
+    title: event ? `${t("event.editTitle")} · ${event.title}` : t("event.editTitle"),
+    description: t("event.metadata.editDescription"),
   });
 }
 
@@ -57,12 +59,13 @@ export default async function EditEventPage({
   }
 
   const updateAction = updateEventAction.bind(null, event.id);
+  const { t } = await getTranslations();
 
   return (
     <EventForm
-      title="Edit event"
-      submitLabel="Save changes"
-      pendingLabel="Saving..."
+      title={t("event.editTitle")}
+      submitLabel={t("common.saveChanges")}
+      pendingLabel={t("event.saving")}
       cancelHref={`/events/${event.id}`}
       action={updateAction}
       defaultValues={{

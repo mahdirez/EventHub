@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { toast } from "sonner";
 
+import { useI18n } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 
 type CopyInviteLinkButtonProps = {
@@ -11,6 +12,7 @@ type CopyInviteLinkButtonProps = {
 };
 
 export function CopyInviteLinkButton({ token }: CopyInviteLinkButtonProps) {
+  const { t } = useI18n();
   const [copied, setCopied] = useState(false);
 
   async function handleCopy() {
@@ -23,10 +25,10 @@ export function CopyInviteLinkButton({ token }: CopyInviteLinkButtonProps) {
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
-      toast.success("Invite link copied to clipboard");
+      toast.success(t("toast.inviteCopied"));
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Could not copy link. Please copy it manually.");
+      toast.error(t("toast.inviteCopyFailed"));
     }
   }
 
@@ -39,7 +41,7 @@ export function CopyInviteLinkButton({ token }: CopyInviteLinkButtonProps) {
       disabled={!token}
     >
       {copied ? <CheckIcon /> : <CopyIcon />}
-      {copied ? "Copied" : "Copy link"}
+      {copied ? t("common.copied") : t("common.copyLink")}
     </Button>
   );
 }

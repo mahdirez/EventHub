@@ -12,6 +12,7 @@ import { eventFormSchema } from "@/lib/validations/event";
 import { parseFormData } from "@/lib/validations/parse-form-data";
 import { rsvpFormSchema } from "@/lib/validations/rsvp";
 import { canRsvpGoing } from "@/lib/event-capacity";
+import { getTranslations } from "@/lib/i18n/server";
 import { getSession } from "../auth/server";
 import { prisma } from "../prisma";
 
@@ -41,9 +42,10 @@ export async function createEventAction(
   try {
     const session = await getSession();
     const userId = session.data?.user?.id;
+    const { t } = await getTranslations();
 
     if (!userId) {
-      return actionError("You must be signed in to create an event.");
+      return actionError(t("actions.signInRequired"));
     }
 
     const parsed = parseFormData(eventFormSchema, formData);
@@ -79,6 +81,7 @@ export async function updateEventAction(
   try {
     const session = await getSession();
     const userId = session.data?.user?.id;
+    const { t } = await getTranslations();
 
     const parsed = parseFormData(eventFormSchema, formData);
     if (!parsed.success) {
@@ -94,7 +97,7 @@ export async function updateEventAction(
 
       if (parsed.data.capacity < goingCount) {
         return actionError(
-          `Capacity cannot be less than the current number of going RSVPs (${goingCount}).`,
+          t("actions.capacityTooLow", { count: goingCount }),
         );
       }
     }
@@ -148,6 +151,7 @@ export async function createInviteLinkAction(
   try {
     const session = await getSession();
     const userId = session.data?.user?.id;
+    const { t } = await getTranslations();
 
     await requireEventOwner(eventId, userId);
 
@@ -160,7 +164,7 @@ export async function createInviteLinkAction(
     });
 
     revalidatePath(`/events/${eventId}`);
-    return actionSuccess("Invite link generated successfully");
+    return actionSuccess(t("toast.inviteGenerated"));
   } catch (error) {
     return actionError(getErrorMessage(error));
   }
@@ -175,6 +179,7 @@ export async function submitOrUpdateRsvpAction(
 
   try {
     const parsed = parseFormData(rsvpFormSchema, formData);
+    const { t } = await getTranslations();
     if (!parsed.success) {
       return parsed.state;
     }
@@ -192,7 +197,7 @@ export async function submitOrUpdateRsvpAction(
     });
 
     if (!invite) {
-      return actionError("Invite link is invalid.");
+      return actionError(t("actions.inviteInvalid"));
     }
 
     const eventId = invite.event.id;
@@ -220,9 +225,7 @@ export async function submitOrUpdateRsvpAction(
           existingRsvp?.status,
         )
       ) {
-        return actionError(
-          "This event is at capacity. Please choose Maybe or Not going.",
-        );
+        return actionError(t("actions.atCapacity"));
       }
     }
 

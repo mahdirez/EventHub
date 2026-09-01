@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect, useState } from "react";
 
+import { useI18n } from "@/components/i18n-provider";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import {
   Field,
@@ -38,6 +39,7 @@ export function InviteRsvpForm({
   capacity = null,
   goingCount,
 }: InviteRsvpFormProps) {
+  const { t } = useI18n();
   const [state, formAction] = useActionState(action, null);
   useActionToast(state);
   const [defaults, setDefaults] = useState<StoredRsvp | null>(
@@ -70,30 +72,28 @@ export function InviteRsvpForm({
     <>
       {submitted ? (
         <p className="mb-4 rounded-md border border-[var(--accent)]/50 bg-[var(--surface)]/15 p-3 text-sm">
-          Your RSVP has been recorded.
+          {t("rsvp.recorded")}
         </p>
       ) : null}
       {defaults ? (
         <p className="mb-4 text-sm text-[var(--muted-foreground)]">
-          We found your previous RSVP for this event. Update your response
-          below if anything changed.
+          {t("rsvp.prefilled")}
         </p>
       ) : null}
       {!canSelectGoing ? (
         <p className="mb-4 text-sm text-[var(--muted-foreground)]">
-          This event is at capacity for Going responses. You can still RSVP as
-          Maybe or Not going.
+          {t("rsvp.atCapacity")}
         </p>
       ) : null}
       <form key={formKey} action={formAction} noValidate>
         <FieldGroup>
           <FieldSet>
             <Field data-invalid={Boolean(state?.fieldErrors?.name)}>
-              <FieldLabel htmlFor="name">Name</FieldLabel>
+              <FieldLabel htmlFor="name">{t("rsvp.name")}</FieldLabel>
               <Input
                 id="name"
                 name="name"
-                placeholder="Your name"
+                placeholder={t("rsvp.namePlaceholder")}
                 defaultValue={defaults?.name ?? ""}
                 minLength={rsvpFormConstraints.name.minLength}
                 maxLength={rsvpFormConstraints.name.maxLength}
@@ -104,12 +104,12 @@ export function InviteRsvpForm({
           </FieldSet>
           <FieldSet>
             <Field data-invalid={Boolean(state?.fieldErrors?.email)}>
-              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <FieldLabel htmlFor="email">{t("rsvp.email")}</FieldLabel>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t("rsvp.emailPlaceholder")}
                 defaultValue={defaults?.email ?? ""}
                 maxLength={rsvpFormConstraints.email.maxLength}
                 required
@@ -119,7 +119,7 @@ export function InviteRsvpForm({
           </FieldSet>
           <FieldSet>
             <Field data-invalid={Boolean(state?.fieldErrors?.status)}>
-              <FieldLabel htmlFor="status">Attendance</FieldLabel>
+              <FieldLabel htmlFor="status">{t("rsvp.attendance")}</FieldLabel>
               <select
                 id="status"
                 name="status"
@@ -128,16 +128,16 @@ export function InviteRsvpForm({
                 className="flex h-10 w-full rounded-md border border-[var(--border)] bg-[var(--surface)] px-3"
               >
                 <option value="going" disabled={!canSelectGoing}>
-                  Going{!canSelectGoing ? " (full)" : ""}
+                  {!canSelectGoing ? t("rsvp.goingFull") : t("rsvp.status.going")}
                 </option>
-                <option value="maybe">Maybe</option>
-                <option value="not_going">Not going</option>
+                <option value="maybe">{t("rsvp.status.maybe")}</option>
+                <option value="not_going">{t("rsvp.status.notGoing")}</option>
               </select>
               <FieldError errors={fieldErrorMessages(state?.fieldErrors, "status")} />
             </Field>
           </FieldSet>
-          <FormSubmitButton className="w-fit" pendingLabel="Submitting...">
-            {defaults ? "Update RSVP" : "Submit RSVP"}
+          <FormSubmitButton className="w-fit" pendingLabel={t("rsvp.submitting")}>
+            {defaults ? t("rsvp.update") : t("rsvp.submit")}
           </FormSubmitButton>
         </FieldGroup>
       </form>

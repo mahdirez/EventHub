@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useActionToast } from "@/hooks/use-action-toast";
+import { useI18n } from "@/components/i18n-provider";
 import type { ActionState } from "@/lib/action-state";
 import { toDatetimeLocalValue } from "@/lib/event-datetime";
 import { eventFormConstraints } from "@/lib/validations/event";
@@ -49,6 +50,7 @@ export function EventForm({
   action,
   defaultValues,
 }: EventFormProps) {
+  const { t } = useI18n();
   const [state, formAction] = useActionState(action, null);
   useActionToast(state);
 
@@ -64,11 +66,11 @@ export function EventForm({
               <FieldSet>
                 <FieldGroup>
                   <Field data-invalid={Boolean(state?.fieldErrors?.title)}>
-                    <FieldLabel htmlFor="title">Title</FieldLabel>
+                    <FieldLabel htmlFor="title">{t("event.form.title")}</FieldLabel>
                     <Input
                       id="title"
                       name="title"
-                      placeholder="Team dinner"
+                      placeholder={t("event.form.titlePlaceholder")}
                       defaultValue={defaultValues?.title ?? ""}
                       minLength={eventFormConstraints.title.minLength}
                       maxLength={eventFormConstraints.title.maxLength}
@@ -81,11 +83,11 @@ export function EventForm({
               <FieldSet>
                 <FieldGroup>
                   <Field data-invalid={Boolean(state?.fieldErrors?.description)}>
-                    <FieldLabel htmlFor="description">Description</FieldLabel>
+                    <FieldLabel htmlFor="description">{t("event.form.description")}</FieldLabel>
                     <Textarea
                       id="description"
                       name="description"
-                      placeholder="Optional details about the event"
+                      placeholder={t("event.form.descriptionPlaceholder")}
                       defaultValue={defaultValues?.description ?? ""}
                       maxLength={eventFormConstraints.description.maxLength}
                     />
@@ -96,11 +98,11 @@ export function EventForm({
               <FieldSet>
                 <FieldGroup>
                   <Field data-invalid={Boolean(state?.fieldErrors?.location)}>
-                    <FieldLabel htmlFor="location">Location</FieldLabel>
+                    <FieldLabel htmlFor="location">{t("event.form.location")}</FieldLabel>
                     <Input
                       id="location"
                       name="location"
-                      placeholder="Optional location"
+                      placeholder={t("event.form.locationPlaceholder")}
                       defaultValue={defaultValues?.location ?? ""}
                       maxLength={eventFormConstraints.location.maxLength}
                     />
@@ -111,7 +113,7 @@ export function EventForm({
               <FieldSet>
                 <FieldGroup>
                   <Field data-invalid={Boolean(state?.fieldErrors?.eventDate)}>
-                    <FieldLabel htmlFor="eventDate">Date and time</FieldLabel>
+                    <FieldLabel htmlFor="eventDate">{t("event.form.dateTime")}</FieldLabel>
                     <Input
                       id="eventDate"
                       name="eventDate"
@@ -125,7 +127,7 @@ export function EventForm({
               <FieldSet>
                 <FieldGroup>
                   <Field data-invalid={Boolean(state?.fieldErrors?.capacity)}>
-                    <FieldLabel htmlFor="capacity">Capacity (optional)</FieldLabel>
+                    <FieldLabel htmlFor="capacity">{t("event.form.capacity")}</FieldLabel>
                     <Input
                       id="capacity"
                       name="capacity"
@@ -133,7 +135,7 @@ export function EventForm({
                       min={eventFormConstraints.capacity.min}
                       max={eventFormConstraints.capacity.max}
                       step={1}
-                      placeholder="Unlimited"
+                      placeholder={t("common.unlimited")}
                       defaultValue={
                         defaultValues?.capacity != null
                           ? String(defaultValues.capacity)
@@ -149,7 +151,7 @@ export function EventForm({
                   {submitLabel}
                 </FormSubmitButton>
                 <Button type="button" variant="outline" asChild>
-                  <Link href={cancelHref}>Cancel</Link>
+                  <Link href={cancelHref}>{t("common.cancel")}</Link>
                 </Button>
               </div>
             </FieldGroup>

@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import { Trash2Icon } from "lucide-react";
 
+import { useI18n } from "@/components/i18n-provider";
 import { FormSubmitButton } from "@/components/form-submit-button";
 import {
   AlertDialog,
@@ -31,33 +32,33 @@ export function DeleteEventDialog({
   action,
   eventTitle,
 }: DeleteEventDialogProps) {
+  const { t } = useI18n();
   const [state, formAction] = useActionState(action, null);
   useActionToast(state);
 
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="destructive">Delete event</Button>
+        <Button variant="destructive">{t("common.deleteEvent")}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogMedia>
             <Trash2Icon />
           </AlertDialogMedia>
-          <AlertDialogTitle>Delete this event?</AlertDialogTitle>
+          <AlertDialogTitle>{t("event.deleteTitle")}</AlertDialogTitle>
           <AlertDialogDescription>
-            &quot;{eventTitle}&quot; will be permanently deleted along with its
-            invite link and all RSVP responses. This action cannot be undone.
+            {t("event.deleteDescription", { title: eventTitle })}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
           <form action={formAction}>
             <FormSubmitButton
               variant="destructive"
-              pendingLabel="Deleting..."
+              pendingLabel={t("event.deleting")}
             >
-              Delete event
+              {t("common.deleteEvent")}
             </FormSubmitButton>
           </form>
         </AlertDialogFooter>

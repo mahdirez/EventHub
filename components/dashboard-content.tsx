@@ -7,6 +7,7 @@ import { EmptyState } from "./empty-state";
 import type { RsvpStatus as PrismaRsvpStatus } from "@/app/generated/prisma/enums";
 import { formatEventSchedule } from "@/lib/copy";
 import { Badge } from "./ui/badge";
+import { getTranslations } from "@/lib/i18n/server";
 
 export function countByStatus(rsvps: { status: PrismaRsvpStatus }[]) {
   let goingCount = 0;
@@ -21,6 +22,8 @@ export function countByStatus(rsvps: { status: PrismaRsvpStatus }[]) {
 }
 
 export async function DashboardContent({ userId }: { userId: string }) {
+  const { t, dictionary } = await getTranslations();
+
   const rows = await prisma.event.findMany({
     where: {
       ownerUserId: userId,
@@ -44,17 +47,18 @@ export async function DashboardContent({ userId }: { userId: string }) {
     location: row.location,
     ...countByStatus(row.rsvps),
   }));
+
   return (
     <div className="flex flex-1 flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Your events</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("dashboard.title")}</h1>
           <p className="text-sm text-[var(--muted-foreground)]">
-            Track attendance responses and manage invite links.
+            {t("dashboard.description")}
           </p>
         </div>
         <Button asChild>
-          <Link href="/events/new">Create event</Link>
+          <Link href="/events/new">{t("common.createEvent")}</Link>
         </Button>
       </div>
 
@@ -63,11 +67,11 @@ export async function DashboardContent({ userId }: { userId: string }) {
           <CardContent>
             <EmptyState
               icon={CalendarDaysIcon}
-              title="No events yet"
-              description="Create your first event, generate an invite link, and start collecting RSVPs from guests."
+              title={t("dashboard.emptyTitle")}
+              description={t("dashboard.emptyDescription")}
               action={
                 <Button asChild>
-                  <Link href="/events/new">Create your first event</Link>
+                  <Link href="/events/new">{t("dashboard.createFirstEvent")}</Link>
                 </Button>
               }
             />
@@ -81,18 +85,26 @@ export async function DashboardContent({ userId }: { userId: string }) {
                 <div className="flex items-center justify-between gap-2">
                   <CardTitle className="text-lg">{event.title}</CardTitle>
                   <Button asChild size="sm">
-                    <Link href={`/events/${event.id}`}>View details</Link>
+                    <Link href={`/events/${event.id}`}>{t("common.viewDetails")}</Link>
                   </Button>
                 </div>
                 <div className="flex flex-wrap gap-2 text-xs">
-                  <Badge variant={"secondary"}>Going: {event.goingCount}</Badge>
-                  <Badge variant={"secondary"}>Maybe: {event.maybeCount}</Badge>
                   <Badge variant="secondary">
-                    Not going: {event.notGoingCount}
+                    {t("badges.going", { count: event.goingCount })}
+                  </Badge>
+                  <Badge variant="secondary">
+                    {t("badges.maybe", { count: event.maybeCount })}
+                  </Badge>
+                  <Badge variant="secondary">
+                    {t("badges.notGoing", { count: event.notGoingCount })}
                   </Badge>
                 </div>
                 <p className="text-sm text-[var(--muted-foreground)]">
-                  {formatEventSchedule(event.eventDate, event.location)}
+                  {formatEventSchedule(
+                    event.eventDate,
+                    dictionary.common.noDateSet,
+                    event.location,
+                  )}
                 </p>
               </CardHeader>
             </Card>

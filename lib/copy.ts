@@ -1,15 +1,17 @@
 import type { RsvpStatus } from "@/app/generated/prisma/enums";
+import type { Dictionary } from "@/lib/i18n";
 
-export const NO_DATE_LABEL = "No date set";
-
-export function formatRsvpStatus(status: RsvpStatus | string): string {
+export function formatRsvpStatus(
+  status: RsvpStatus | string,
+  labels: Dictionary["rsvp"]["status"],
+): string {
   switch (status) {
     case "going":
-      return "Going";
+      return labels.going;
     case "maybe":
-      return "Maybe";
+      return labels.maybe;
     case "not_going":
-      return "Not going";
+      return labels.notGoing;
     default:
       return status;
   }
@@ -17,11 +19,12 @@ export function formatRsvpStatus(status: RsvpStatus | string): string {
 
 export function formatEventSchedule(
   eventDate: string | null,
+  noDateLabel: string,
   location?: string | null,
 ): string {
   const datePart = eventDate
     ? new Date(eventDate).toLocaleString()
-    : NO_DATE_LABEL;
+    : noDateLabel;
 
   if (!location) {
     return datePart;

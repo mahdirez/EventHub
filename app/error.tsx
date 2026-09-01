@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { AlertTriangleIcon } from "lucide-react";
 
+import { useI18n } from "@/components/i18n-provider";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -19,6 +20,8 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const { t } = useI18n();
+
   useEffect(() => {
     console.error(error);
   }, [error]);
@@ -30,16 +33,13 @@ export default function GlobalError({
           <div className="mx-auto flex size-10 items-center justify-center rounded-md bg-destructive/10">
             <AlertTriangleIcon className="size-5 text-destructive" />
           </div>
-          <CardTitle>Something went wrong</CardTitle>
-          <CardDescription>
-            An unexpected error occurred. Please try again, or return to the
-            dashboard if the problem continues.
-          </CardDescription>
+          <CardTitle>{t("error.title")}</CardTitle>
+          <CardDescription>{t("error.description")}</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap justify-center gap-3">
-          <Button onClick={reset}>Try again</Button>
+          <Button onClick={reset}>{t("error.tryAgain")}</Button>
           <Button variant="outline" asChild>
-            <a href="/dashboard">Go to dashboard</a>
+            <a href="/dashboard">{t("error.goDashboard")}</a>
           </Button>
         </CardContent>
       </Card>

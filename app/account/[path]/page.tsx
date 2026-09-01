@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AccountView, accountViewPaths } from "@neondatabase/auth/react";
 
 import { createPageMetadata, getAccountPageTitle } from "@/lib/metadata";
+import { getTranslations } from "@/lib/i18n/server";
 
 export function generateStaticParams() {
   return Object.values(accountViewPaths).map((path) => ({ path }));
@@ -13,10 +14,11 @@ export async function generateMetadata({
   params: Promise<{ path: string }>;
 }): Promise<Metadata> {
   const { path } = await params;
+  const { t } = await getTranslations();
 
   return createPageMetadata({
-    title: getAccountPageTitle(path),
-    description: "Manage your EventHub account settings and security.",
+    title: getAccountPageTitle(path, t),
+    description: t("account.description"),
   });
 }
 

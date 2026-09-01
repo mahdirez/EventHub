@@ -10,6 +10,7 @@ import { EmptyState } from "./empty-state";
 import { createInviteLinkAction, deleteEventAction } from "@/lib/actions/events";
 import { formatCapacityLabel } from "@/lib/event-capacity";
 import { formatEventSchedule, formatRsvpStatus } from "@/lib/copy";
+import { getTranslations } from "@/lib/i18n/server";
 import { DeleteEventDialog } from "./delete-event-dialog";
 import { CopyInviteLinkButton } from "./copy-invite-link-button";
 import { GenerateInviteForm } from "./generate-invite-form";
@@ -29,6 +30,8 @@ export async function EventDetailContent({
   eventId: string;
   userId: string;
 }) {
+  const { t, dictionary } = await getTranslations();
+
   const row = await prisma.event.findFirst({
     where: { id: eventId, ownerUserId: userId },
     select: {
@@ -91,6 +94,13 @@ export async function EventDetailContent({
   const inviteUrl = event.inviteToken
     ? `/invite/${event.inviteToken}`
     : null;
+
+  const capacityLabel = formatCapacityLabel(
+    event.capacity,
+    event.goingCount,
+    t("badges.capacity"),
+  );
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -99,7 +109,11 @@ export async function EventDetailContent({
             {event.title}
           </div>
           <p className="text-sm text-[var(--muted-foreground)]">
-            {formatEventSchedule(event.eventDate, event.location)}
+            {formatEventSchedule(
+              event.eventDate,
+              dictionary.common.noDateSet,
+              event.location,
+            )}
           </p>
           {event.description && (
             <p className="max-w-2xl text-sm text-[var(--muted-foreground)]">
@@ -109,10 +123,10 @@ export async function EventDetailContent({
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button asChild variant="outline">
-            <Link href="/dashboard">Back</Link>
+            <Link href="/dashboard">{t("common.back")}</Link>
           </Button>
           <Button asChild variant="secondary">
-            <Link href={`/events/${event.id}/edit`}>Edit event</Link>
+            <Link href={`/events/${event.id}/edit`}>{t("common.editEvent")}</Link>
           </Button>
           <DeleteEventDialog
             action={deleteEventActionForEvent}
@@ -121,23 +135,26 @@ export async function EventDetailContent({
         </div>
       </div>
       <div className="flex flex-wrap gap-2 text-xs">
-        <Badge>Going: {event.goingCount}</Badge>
-        <Badge variant={"secondary"}>Maybe: {event.maybeCount}</Badge>
-        <Badge variant="outline">Not going: {event.notGoingCount}</Badge>
-        {formatCapacityLabel(event.capacity, event.goingCount) ? (
+        <Badge>{t("badges.going", { count: event.goingCount })}</Badge>
+        <Badge variant="secondary">
+          {t("badges.maybe", { count: event.maybeCount })}
+        </Badge>
+        <Badge variant="outline">
+          {t("badges.notGoing", { count: event.notGoingCount })}
+        </Badge>
+        {capacityLabel ? (
           <Badge variant="outline">
-            Capacity: {formatCapacityLabel(event.capacity, event.goingCount)}
+            {t("common.capacity")}: {capacityLabel}
           </Badge>
         ) : null}
       </div>
       <Card>
         <CardHeader>
-          <CardTitle>Invite link</CardTitle>
+          <CardTitle>{t("common.inviteLink")}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-[var(--muted-foreground)]">
-            Share this link with guests so they can RSVP without creating an
-            account.
+            {t("event.inviteDescription")}
           </p>
           {inviteUrl ? (
             <div className="flex flex-wrap items-center gap-2">
@@ -149,8 +166,8 @@ export async function EventDetailContent({
           ) : (
             <EmptyState
               icon={Link2Icon}
-              title="No invite link yet"
-              description="Generate a link and share it with guests so they can RSVP without an account."
+              title={t("event.noInviteTitle")}
+              description={t("event.noInviteDescription")}
               action={
                 <GenerateInviteForm action={createInviteActionForEvent} />
               }
@@ -164,18 +181,18 @@ export async function EventDetailContent({
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between gap-3">
-          <CardTitle>Attendees</CardTitle>
+          <CardTitle>{t("common.attendees")}</CardTitle>
           {rsvps.length > 0 ? (
             <Button asChild variant="outline" size="sm">
               <a href={`/api/events/${event.id}/attendees/export`}>
                 <DownloadIcon />
-                Export CSV
+                {t("common.exportCsv")}
               </a>
             </Button>
           ) : (
             <Button variant="outline" size="sm" disabled>
               <DownloadIcon />
-              Export CSV
+              {t("common.exportCsv")}
             </Button>
           )}
         </CardHeader>
@@ -183,11 +200,11 @@ export async function EventDetailContent({
           {rsvps.length === 0 ? (
             <EmptyState
               icon={UsersIcon}
-              title="No RSVPs yet"
+              title={t("event.noRsvpsTitle")}
               description={
                 inviteUrl
-                  ? "Share your invite link with guests. Their responses will appear here as they RSVP."
-                  : "Generate an invite link first, then share it with guests to start collecting responses."
+                  ? t("event.noRsvpsWithLink")
+                  : t("event.noRsvpsWithoutLink")
               }
               className="py-6"
             />
@@ -195,10 +212,10 @@ export async function EventDetailContent({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Updated</TableHead>
+                  <TableHead>{t("table.name")}</TableHead>
+                  <TableHead>{t("table.email")}</TableHead>
+                  <TableHead>{t("table.status")}</TableHead>
+                  <TableHead>{t("table.updated")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -207,9 +224,13 @@ export async function EventDetailContent({
                     <TableCell>{rsvp.name}</TableCell>
                     <TableCell>{rsvp.email}</TableCell>
                     <TableCell>
-                      <Badge>{formatRsvpStatus(rsvp.status)}</Badge>
+                      <Badge>
+                        {formatRsvpStatus(rsvp.status, dictionary.rsvp.status)}
+                      </Badge>
                     </TableCell>
-                    <TableCell>{new Date(rsvp.respondedAt).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      {new Date(rsvp.respondedAt).toLocaleDateString()}
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

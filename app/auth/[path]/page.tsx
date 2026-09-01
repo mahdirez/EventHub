@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AuthView } from "@neondatabase/auth/react";
 
 import { createPageMetadata, getAuthPageTitle } from "@/lib/metadata";
+import { getTranslations } from "@/lib/i18n/server";
 
 export const dynamicParams = false;
 
@@ -11,10 +12,11 @@ export async function generateMetadata({
   params: Promise<{ path: string }>;
 }): Promise<Metadata> {
   const { path } = await params;
+  const { t } = await getTranslations();
 
   return createPageMetadata({
-    title: getAuthPageTitle(path),
-    description: "Sign in or create an EventHub account to manage your events.",
+    title: getAuthPageTitle(path, t),
+    description: t("auth.description"),
   });
 }
 

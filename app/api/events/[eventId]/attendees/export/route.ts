@@ -3,6 +3,7 @@ import {
   getAttendeesExportFilename,
 } from "@/lib/export-attendees";
 import { getSession } from "@/lib/auth/server";
+import { getTranslations } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
@@ -12,6 +13,7 @@ export async function GET(
   const { eventId } = await context.params;
   const session = await getSession();
   const userId = session.data?.user?.id;
+  const { dictionary } = await getTranslations();
 
   if (!userId) {
     return new Response("Unauthorized", { status: 401 });
@@ -37,7 +39,10 @@ export async function GET(
     },
   });
 
-  const csv = buildAttendeesCsv(rsvps);
+  const csv = buildAttendeesCsv(rsvps, {
+    headers: dictionary.table,
+    status: dictionary.rsvp.status,
+  });
   const filename = getAttendeesExportFilename(event.title);
 
   return new Response(csv, {

@@ -73,6 +73,11 @@ export const en = {
     noEventsTitle: "No events found",
     noEventsDescription:
       "Try different keywords or filters, or browse events by category.",
+    pagination: {
+      previous: "Previous",
+      next: "Next",
+      page: "Page {page} of {total}",
+    },
   },
   common: {
     dashboard: "Dashboard",

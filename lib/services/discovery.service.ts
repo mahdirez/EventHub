@@ -7,6 +7,10 @@ import {
   publicEventSlugWhere,
 } from "@/lib/services/discovery-filters";
 import {
+  DISCOVERY_PAGE_SIZE,
+  getPageCount,
+} from "@/lib/discovery-pagination";
+import {
   isCategoryId,
   mapEventRowToCard,
   publicEventSelect,
@@ -18,6 +22,14 @@ import type {
 } from "@/lib/types/discovery";
 
 export type { DiscoveryCategory, DiscoveryEventCard };
+
+export type PaginatedDiscoveryEvents = {
+  events: DiscoveryEventCard[];
+  total: number;
+  page: number;
+  pageSize: number;
+  pageCount: number;
+};
 
 export async function getDiscoveryCategories(): Promise<DiscoveryCategory[]> {
   try {
@@ -77,6 +89,34 @@ export async function searchPublicEvents(
   });
 
   return rows.map(mapEventRowToCard);
+}
+
+export async function searchPublicEventsPaginated(
+  filters: ExploreFilters,
+  page: number,
+  pageSize = DISCOVERY_PAGE_SIZE,
+): Promise<PaginatedDiscoveryEvents> {
+  const where = buildPublicEventWhere(filters);
+  const safePage = Math.max(1, page);
+
+  const [total, rows] = await prisma.$transaction([
+    prisma.event.count({ where }),
+    prisma.event.findMany({
+      where,
+      orderBy: [{ eventDate: "asc" }, { createdAt: "desc" }],
+      skip: (safePage - 1) * pageSize,
+      take: pageSize,
+      select: publicEventSelect,
+    }),
+  ]);
+
+  return {
+    events: rows.map(mapEventRowToCard),
+    total,
+    page: safePage,
+    pageSize,
+    pageCount: getPageCount(total, pageSize),
+  };
 }
 
 export async function getPublicEventBySlug(

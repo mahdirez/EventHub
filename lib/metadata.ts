@@ -7,6 +7,10 @@ type PageMetadataOptions = {
   description?: string;
 };
 
+function getSiteUrl() {
+  return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+}
+
 export function createPageMetadata({
   title,
   description,
@@ -14,6 +18,39 @@ export function createPageMetadata({
   return {
     title,
     description,
+  };
+}
+
+export function createPublicEventMetadata({
+  title,
+  description,
+  imageUrl,
+  path,
+}: {
+  title: string;
+  description?: string;
+  imageUrl?: string;
+  path: string;
+}): Metadata {
+  const url = `${getSiteUrl()}${path}`;
+  const desc = description?.trim() || undefined;
+
+  return {
+    title,
+    description: desc,
+    openGraph: {
+      title,
+      description: desc,
+      url,
+      type: "website",
+      ...(imageUrl ? { images: [{ url: imageUrl, alt: title }] } : {}),
+    },
+    twitter: {
+      card: imageUrl ? "summary_large_image" : "summary",
+      title,
+      description: desc,
+      ...(imageUrl ? { images: [imageUrl] } : {}),
+    },
   };
 }
 

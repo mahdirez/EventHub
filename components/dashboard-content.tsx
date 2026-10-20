@@ -1,5 +1,6 @@
 import { CalendarDaysIcon } from "lucide-react";
 
+import { PaginationBar } from "@/components/design-system/pagination-bar";
 import { PrimaryButton } from "@/components/design-system/primary-button";
 import { OrganizerEventCard } from "@/components/design-system/organizer-event-card";
 import { SurfaceCard } from "@/components/design-system/surface-card";
@@ -8,18 +9,33 @@ import { OrganizerPageHeader } from "@/components/layout/organizer-page-header";
 import { countByStatus } from "@/lib/event-rsvp-stats";
 import { formatEventSchedule } from "@/lib/copy";
 import { prisma } from "@/lib/prisma";
+import {
+  buildDashboardHref,
+  getPageCount,
+  ORGANIZER_PAGE_SIZE,
+} from "@/lib/discovery-pagination";
 import { getTranslations } from "@/lib/i18n/server";
 
-export async function DashboardContent({ userId }: { userId: string }) {
+export async function DashboardContent({
+  userId,
+  page = 1,
+}: {
+  userId: string;
+  page?: number;
+}) {
   const { t, dictionary } = await getTranslations();
+  const safePage = Math.max(1, page);
+  const where = { ownerUserId: userId };
 
-  const rows = await prisma.event.findMany({
-    where: {
-      ownerUserId: userId,
-    },
+  const [total, rows] = await prisma.$transaction([
+    prisma.event.count({ where }),
+    prisma.event.findMany({
+    where,
     orderBy: {
       createdAt: "desc",
     },
+    skip: (safePage - 1) * ORGANIZER_PAGE_SIZE,
+    take: ORGANIZER_PAGE_SIZE,
     select: {
       id: true,
       title: true,
@@ -30,7 +46,10 @@ export async function DashboardContent({ userId }: { userId: string }) {
       slug: true,
       rsvps: { select: { status: true } },
     },
-  });
+  }),
+  ]);
+
+  const pageCount = getPageCount(total, ORGANIZER_PAGE_SIZE);
 
   const events = rows.map((row) => {
     const counts = countByStatus(row.rsvps);
@@ -72,6 +91,7 @@ export async function DashboardContent({ userId }: { userId: string }) {
           />
         </SurfaceCard>
       ) : (
+        <>
         <div className="grid gap-4 md:grid-cols-2">
           {events.map((event) => (
             <OrganizerEventCard
@@ -101,6 +121,21 @@ export async function DashboardContent({ userId }: { userId: string }) {
             />
           ))}
         </div>
+        <PaginationBar
+          page={safePage}
+          pageCount={pageCount}
+          previousHref={safePage > 1 ? buildDashboardHref(safePage - 1) : null}
+          nextHref={
+            safePage < pageCount ? buildDashboardHref(safePage + 1) : null
+          }
+          previousLabel={t("discovery.pagination.previous")}
+          nextLabel={t("discovery.pagination.next")}
+          pageLabel={t("discovery.pagination.page", {
+            page: safePage,
+            total: pageCount,
+          })}
+        />
+        </>
       )}
     </div>
   );

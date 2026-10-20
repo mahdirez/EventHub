@@ -1,13 +1,18 @@
 import { CalendarSearchIcon } from "lucide-react";
 
 import { DiscoverySearchForm } from "@/components/design-system/discovery-search-form";
+import { PaginationBar } from "@/components/design-system/pagination-bar";
 import { EmptyState } from "@/components/empty-state";
 import { PageContainer } from "@/components/layout/page-container";
 import { DiscoveryEventGrid } from "@/features/discovery/discovery-event-grid";
+import {
+  buildExploreHref,
+  parsePageParam,
+} from "@/lib/discovery-pagination";
 import { createPageMetadata } from "@/lib/metadata";
 import { getTranslations } from "@/lib/i18n/server";
 import { parseExploreFilters } from "@/lib/services/discovery-filters";
-import { searchPublicEvents } from "@/lib/services/discovery.service";
+import { searchPublicEventsPaginated } from "@/lib/services/discovery.service";
 import { getFavoriteUiContext } from "@/lib/services/favorites.service";
 
 export async function generateMetadata() {
@@ -26,11 +31,17 @@ export default async function ExplorePage({
 }) {
   const query = await searchParams;
   const filters = parseExploreFilters(query);
+  const page = parsePageParam(query.page);
   const { t, locale } = await getTranslations();
-  const [events, favoriteContext] = await Promise.all([
-    searchPublicEvents(filters),
+  const [result, favoriteContext] = await Promise.all([
+    searchPublicEventsPaginated(filters, page),
     getFavoriteUiContext(),
   ]);
+
+  const previousHref =
+    page > 1 ? buildExploreHref(filters, page - 1) : null;
+  const nextHref =
+    page < result.pageCount ? buildExploreHref(filters, page + 1) : null;
 
   return (
     <PageContainer className="max-w-[1440px] gap-8">
@@ -52,20 +63,34 @@ export default async function ExplorePage({
         }}
       />
 
-      {events.length === 0 ? (
+      {result.events.length === 0 ? (
         <EmptyState
           icon={CalendarSearchIcon}
           title={t("discovery.noEventsTitle")}
           description={t("discovery.noEventsDescription")}
         />
       ) : (
-        <DiscoveryEventGrid
-          events={events}
-          locale={locale}
-          t={t}
-          favoriteEventIds={favoriteContext.favoriteEventIds}
-          isAuthenticated={favoriteContext.isAuthenticated}
-        />
+        <>
+          <DiscoveryEventGrid
+            events={result.events}
+            locale={locale}
+            t={t}
+            favoriteEventIds={favoriteContext.favoriteEventIds}
+            isAuthenticated={favoriteContext.isAuthenticated}
+          />
+          <PaginationBar
+            page={result.page}
+            pageCount={result.pageCount}
+            previousHref={previousHref}
+            nextHref={nextHref}
+            previousLabel={t("discovery.pagination.previous")}
+            nextLabel={t("discovery.pagination.next")}
+            pageLabel={t("discovery.pagination.page", {
+              page: result.page,
+              total: result.pageCount,
+            })}
+          />
+        </>
       )}
     </PageContainer>
   );

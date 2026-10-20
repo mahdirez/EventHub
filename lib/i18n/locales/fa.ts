@@ -74,6 +74,11 @@ export const fa = {
     noEventsTitle: "رویدادی پیدا نشد",
     noEventsDescription:
       "فیلترها یا عبارت جستجو را عوض کنید، یا از دسته‌بندی‌ها مرور کنید.",
+    pagination: {
+      previous: "قبلی",
+      next: "بعدی",
+      page: "صفحه {page} از {total}",
+    },
   },
   common: {
     dashboard: "داشبورد",

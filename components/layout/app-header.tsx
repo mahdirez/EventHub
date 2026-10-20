@@ -1,6 +1,7 @@
 import { CalendarDaysIcon, SearchIcon } from "lucide-react";
 import Link from "next/link";
 
+import { AppHeaderMobileNav } from "@/components/layout/app-header-mobile-nav";
 import { AppHeaderNav } from "@/components/layout/app-header-nav";
 import { HeaderLanguageSwitcher } from "@/components/layout/header-language-switcher";
 import { HeaderThemeToggle } from "@/components/layout/header-theme-toggle";
@@ -55,6 +56,7 @@ export async function AppHeader() {
           )}
         </div>
       </div>
+      <AppHeaderMobileNav />
     </header>
   );
 }

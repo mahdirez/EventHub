@@ -6,7 +6,7 @@ import {
   formatCompactCount,
   formatEventDate,
 } from "@/lib/format-discovery";
-import { createPageMetadata } from "@/lib/metadata";
+import { createPublicEventMetadata } from "@/lib/metadata";
 import { getTranslations } from "@/lib/i18n/server";
 import { getPublicEventBySlug } from "@/lib/services/discovery.service";
 
@@ -19,9 +19,19 @@ export async function generateMetadata({
   const event = await getPublicEventBySlug(slug);
   const { t } = await getTranslations();
 
-  return createPageMetadata({
-    title: event?.title ?? t("common.viewDetails"),
-    description: event?.description ?? t("discovery.explorePageDescription"),
+  if (!event) {
+    return createPublicEventMetadata({
+      title: t("common.viewDetails"),
+      description: t("discovery.explorePageDescription"),
+      path: `/explore/${slug}`,
+    });
+  }
+
+  return createPublicEventMetadata({
+    title: event.title,
+    description: event.description,
+    imageUrl: event.imageUrl,
+    path: `/explore/${event.slug}`,
   });
 }
 

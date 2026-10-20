@@ -135,6 +135,29 @@ export function InvitePageSkeleton() {
   );
 }
 
+export function HomePageSkeleton() {
+  return (
+    <div className="flex flex-col gap-10 pb-12">
+      <Skeleton className="mx-4 aspect-[16/9] min-h-[320px] rounded-3xl sm:mx-6" />
+      <div className="mx-auto w-full max-w-[1440px] space-y-10 px-4 sm:px-6">
+        <div className="flex gap-3 overflow-hidden">
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Skeleton key={index} className="h-28 min-w-[148px] rounded-2xl" />
+          ))}
+        </div>
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+          <div className="grid gap-5 sm:grid-cols-2">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <Skeleton key={index} className="aspect-[4/5] rounded-2xl" />
+            ))}
+          </div>
+          <Skeleton className="h-80 rounded-2xl" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function GenericPageSkeleton() {
   return (
     <div className="flex flex-1 flex-col gap-6">

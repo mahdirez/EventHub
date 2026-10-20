@@ -1,4 +1,5 @@
 import { EventForm } from "@/components/event-form";
+import { OrganizerPageHeader } from "@/components/layout/organizer-page-header";
 import { PageContainer } from "@/components/layout/page-container";
 import { createEventAction } from "@/lib/actions/events";
 import { createPageMetadata } from "@/lib/metadata";
@@ -17,9 +18,12 @@ export default async function NewEventPage() {
   const { t } = await getTranslations();
 
   return (
-    <PageContainer>
-      <EventForm
+    <PageContainer className="max-w-[1440px] gap-8">
+      <OrganizerPageHeader
         title={t("event.createTitle")}
+        description={t("event.metadata.createDescription")}
+      />
+      <EventForm
         submitLabel={t("common.createEvent")}
         pendingLabel={t("event.creating")}
         cancelHref="/dashboard"

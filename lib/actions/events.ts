@@ -13,8 +13,16 @@ import { parseFormData } from "@/lib/validations/parse-form-data";
 import { rsvpFormSchema } from "@/lib/validations/rsvp";
 import { canRsvpGoing } from "@/lib/event-capacity";
 import { getTranslations } from "@/lib/i18n/server";
+import { buildEventWriteData } from "@/lib/services/event-organizer.service";
 import { getSession } from "../auth/server";
 import { prisma } from "../prisma";
+
+function revalidateDiscoveryPaths() {
+  revalidatePath("/");
+  revalidatePath("/explore");
+  revalidatePath("/categories");
+  revalidatePath("/my-events");
+}
 
 async function requireEventOwner(eventId: string, userId: string | undefined) {
   if (!userId) {
@@ -53,14 +61,12 @@ export async function createEventAction(
       return parsed.state;
     }
 
+    const writeData = await buildEventWriteData(parsed.data);
+
     const created = await prisma.event.create({
       data: {
         ownerUserId: userId,
-        title: parsed.data.title,
-        description: parsed.data.description,
-        location: parsed.data.location,
-        eventDate: parsed.data.eventDate ? new Date(parsed.data.eventDate) : null,
-        capacity: parsed.data.capacity,
+        ...writeData,
       },
     });
 
@@ -70,6 +76,7 @@ export async function createEventAction(
   }
 
   revalidatePath("/dashboard");
+  revalidateDiscoveryPaths();
   redirect(`/events/${createdId}`);
 }
 
@@ -102,15 +109,13 @@ export async function updateEventAction(
       }
     }
 
+    const writeData = await buildEventWriteData(parsed.data, {
+      excludeEventId: eventId,
+    });
+
     await prisma.event.update({
       where: { id: eventId },
-      data: {
-        title: parsed.data.title,
-        description: parsed.data.description,
-        location: parsed.data.location,
-        eventDate: parsed.data.eventDate ? new Date(parsed.data.eventDate) : null,
-        capacity: parsed.data.capacity,
-      },
+      data: writeData,
     });
   } catch (error) {
     return actionError(getErrorMessage(error));
@@ -118,6 +123,7 @@ export async function updateEventAction(
 
   revalidatePath("/dashboard");
   revalidatePath(`/events/${eventId}`);
+  revalidateDiscoveryPaths();
   redirect(`/events/${eventId}`);
 }
 
@@ -140,6 +146,7 @@ export async function deleteEventAction(
   }
 
   revalidatePath("/dashboard");
+  revalidateDiscoveryPaths();
   redirect("/dashboard");
 }
 

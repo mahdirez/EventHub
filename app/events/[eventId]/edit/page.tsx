@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { EventForm } from "@/components/event-form";
+import { OrganizerPageHeader } from "@/components/layout/organizer-page-header";
 import { PageContainer } from "@/components/layout/page-container";
 import { updateEventAction } from "@/lib/actions/events";
 import { getSession } from "@/lib/auth/server";
@@ -52,6 +53,11 @@ export default async function EditEventPage({
       location: true,
       eventDate: true,
       capacity: true,
+      visibility: true,
+      categorySlug: true,
+      coverImageUrl: true,
+      city: true,
+      slug: true,
     },
   });
 
@@ -63,9 +69,12 @@ export default async function EditEventPage({
   const { t } = await getTranslations();
 
   return (
-    <PageContainer>
+    <PageContainer className="max-w-[1440px] gap-8">
+      <OrganizerPageHeader
+        title={t("event.editTitle")}
+        description={t("event.metadata.editDescription")}
+      />
       <EventForm
-      title={t("event.editTitle")}
       submitLabel={t("common.saveChanges")}
       pendingLabel={t("event.saving")}
       cancelHref={`/events/${event.id}`}
@@ -76,6 +85,11 @@ export default async function EditEventPage({
         location: event.location,
         eventDate: event.eventDate,
         capacity: event.capacity,
+        visibility: event.visibility,
+        categorySlug: event.categorySlug,
+        coverImageUrl: event.coverImageUrl,
+        city: event.city,
+        slug: event.slug,
       }}
     />
     </PageContainer>

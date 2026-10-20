@@ -1,12 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { prisma } from "@/lib/prisma";
-import Link from "next/link";
 import { CalendarDaysIcon } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+
+import { PrimaryButton } from "@/components/design-system/primary-button";
+import { OrganizerEventCard } from "@/components/design-system/organizer-event-card";
+import { SurfaceCard } from "@/components/design-system/surface-card";
 import { EmptyState } from "./empty-state";
+import { OrganizerPageHeader } from "@/components/layout/organizer-page-header";
 import type { RsvpStatus as PrismaRsvpStatus } from "@/app/generated/prisma/enums";
 import { formatEventSchedule } from "@/lib/copy";
-import { Badge } from "./ui/badge";
+import { prisma } from "@/lib/prisma";
 import { getTranslations } from "@/lib/i18n/server";
 
 export function countByStatus(rsvps: { status: PrismaRsvpStatus }[]) {
@@ -36,78 +37,80 @@ export async function DashboardContent({ userId }: { userId: string }) {
       title: true,
       eventDate: true,
       location: true,
+      city: true,
+      visibility: true,
+      slug: true,
       rsvps: { select: { status: true } },
     },
   });
 
-  const events = rows.map(row => ({
-    id: row.id,
-    title: row.title,
-    eventDate: row.eventDate ? row.eventDate.toISOString() : null,
-    location: row.location,
-    ...countByStatus(row.rsvps),
-  }));
+  const events = rows.map((row) => {
+    const counts = countByStatus(row.rsvps);
+    const locationLabel = row.city ?? row.location;
+    return {
+      id: row.id,
+      title: row.title,
+      eventDate: row.eventDate ? row.eventDate.toISOString() : null,
+      location: locationLabel,
+      visibility: row.visibility,
+      slug: row.slug,
+      ...counts,
+    };
+  });
 
   return (
-    <div className="flex flex-1 flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{t("dashboard.title")}</h1>
-          <p className="text-sm text-[var(--muted-foreground)]">
-            {t("dashboard.description")}
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/events/new">{t("common.createEvent")}</Link>
-        </Button>
-      </div>
+    <div className="flex flex-1 flex-col gap-8">
+      <OrganizerPageHeader
+        title={t("dashboard.title")}
+        description={t("dashboard.description")}
+        actions={
+          <PrimaryButton href="/events/new" showArrow={false}>
+            {t("common.createEvent")}
+          </PrimaryButton>
+        }
+      />
 
       {events.length === 0 ? (
-        <Card>
-          <CardContent>
-            <EmptyState
-              icon={CalendarDaysIcon}
-              title={t("dashboard.emptyTitle")}
-              description={t("dashboard.emptyDescription")}
-              action={
-                <Button asChild>
-                  <Link href="/events/new">{t("dashboard.createFirstEvent")}</Link>
-                </Button>
-              }
-            />
-          </CardContent>
-        </Card>
+        <SurfaceCard>
+          <EmptyState
+            icon={CalendarDaysIcon}
+            title={t("dashboard.emptyTitle")}
+            description={t("dashboard.emptyDescription")}
+            action={
+              <PrimaryButton href="/events/new" showArrow={false}>
+                {t("dashboard.createFirstEvent")}
+              </PrimaryButton>
+            }
+          />
+        </SurfaceCard>
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
-          {events.map(event => (
-            <Card key={event.id}>
-              <CardHeader className="space-y-3">
-                <div className="flex items-center justify-between gap-2">
-                  <CardTitle className="text-lg">{event.title}</CardTitle>
-                  <Button asChild size="sm">
-                    <Link href={`/events/${event.id}`}>{t("common.viewDetails")}</Link>
-                  </Button>
-                </div>
-                <div className="flex flex-wrap gap-2 text-xs">
-                  <Badge variant="secondary">
-                    {t("badges.going", { count: event.goingCount })}
-                  </Badge>
-                  <Badge variant="secondary">
-                    {t("badges.maybe", { count: event.maybeCount })}
-                  </Badge>
-                  <Badge variant="secondary">
-                    {t("badges.notGoing", { count: event.notGoingCount })}
-                  </Badge>
-                </div>
-                <p className="text-sm text-[var(--muted-foreground)]">
-                  {formatEventSchedule(
-                    event.eventDate,
-                    dictionary.common.noDateSet,
-                    event.location,
-                  )}
-                </p>
-              </CardHeader>
-            </Card>
+          {events.map((event) => (
+            <OrganizerEventCard
+              key={event.id}
+              title={event.title}
+              scheduleLabel={formatEventSchedule(
+                event.eventDate,
+                dictionary.common.noDateSet,
+                event.location,
+              )}
+              visibilityLabel={
+                event.visibility === "public"
+                  ? t("event.form.visibilityPublic")
+                  : t("event.form.visibilityPrivate")
+              }
+              goingLabel={t("badges.going", { count: event.goingCount })}
+              maybeLabel={t("badges.maybe", { count: event.maybeCount })}
+              notGoingLabel={t("badges.notGoing", { count: event.notGoingCount })}
+              viewDetailsLabel={t("common.viewDetails")}
+              href={`/events/${event.id}`}
+              publicHref={
+                event.visibility === "public" && event.slug
+                  ? `/explore/${event.slug}`
+                  : null
+              }
+              viewPublicLabel={t("event.viewPublicPage")}
+            />
           ))}
         </div>
       )}

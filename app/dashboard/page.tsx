@@ -23,7 +23,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <PageContainer>
+    <PageContainer className="max-w-[1440px] gap-8">
       <DashboardContent userId={userId} />
     </PageContainer>
   );

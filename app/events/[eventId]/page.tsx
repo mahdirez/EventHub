@@ -42,7 +42,7 @@ export default async function EventDetailsPage({
   }
 
   return (
-    <PageContainer>
+    <PageContainer className="max-w-[1440px] gap-8">
       <EventDetailContent userId={session.data.user.id} eventId={eventId} />
     </PageContainer>
   );

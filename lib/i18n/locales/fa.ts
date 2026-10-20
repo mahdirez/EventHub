@@ -139,15 +139,31 @@ export const fa = {
       "لینک دعوت را با مهمان‌ها به اشتراک بگذارید. پاسخ‌ها اینجا نمایش داده می‌شوند.",
     noRsvpsWithoutLink:
       "ابتدا لینک دعوت بسازید، سپس آن را با مهمان‌ها به اشتراک بگذارید.",
+    viewPublicPage: "صفحه عمومی",
     form: {
       title: "عنوان",
       titlePlaceholder: "شام تیم",
       description: "توضیحات",
       descriptionPlaceholder: "جزئیات اختیاری درباره رویداد",
       location: "مکان",
-      locationPlaceholder: "مکان اختیاری",
+      locationPlaceholder: "محل برگزاری یا آدرس",
+      city: "شهر",
+      cityPlaceholder: "مثلاً تهران",
       dateTime: "تاریخ و ساعت",
       capacity: "ظرفیت (اختیاری)",
+      visibility: "نمایش",
+      visibilityPrivate: "خصوصی (فقط با دعوت)",
+      visibilityPublic: "عمومی (قابل کشف)",
+      visibilityHint:
+        "رویدادهای عمومی در Explore دیده می‌شوند و دیگران می‌توانند ذخیره‌شان کنند.",
+      category: "دسته‌بندی",
+      categoryPlaceholder: "انتخاب دسته",
+      slug: "نامک URL",
+      slugPlaceholder: "react-summit-2025",
+      slugHint:
+        "خالی بماند از عنوان ساخته می‌شود. در /explore/your-slug استفاده می‌شود.",
+      coverImageUrl: "آدرس تصویر کاور",
+      coverImageUrlPlaceholder: "https://images.unsplash.com/...",
     },
     metadata: {
       createDescription: "رویداد جدید با عنوان، تاریخ، مکان و جزئیات اضافه کنید.",

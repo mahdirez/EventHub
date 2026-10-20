@@ -1,9 +1,13 @@
 import { z } from "zod";
 
+import { isCategoryId } from "@/lib/services/discovery-mappers";
+
 function emptyStringToNull(value: string) {
   const trimmed = value.trim();
   return trimmed.length ? trimmed : null;
 }
+
+const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export const eventFormConstraints = {
   title: { minLength: 3, maxLength: 120 },
@@ -79,6 +83,61 @@ export const eventFormSchema = z.object({
         )
         .transform((value) => (value === null ? null : Number(value))),
     ),
-});
+  visibility: z.enum(["private", "public"]),
+  categorySlug: z
+    .string()
+    .trim()
+    .transform((value) => (value.length ? value : null))
+    .pipe(
+      z
+        .string()
+        .nullable()
+        .refine(
+          (value) => value === null || isCategoryId(value),
+          "Please choose a valid category.",
+        ),
+    ),
+  city: z
+    .string()
+    .trim()
+    .max(120, "City must be at most 120 characters.")
+    .transform(emptyStringToNull),
+  coverImageUrl: z
+    .string()
+    .trim()
+    .transform((value) => (value.length ? value : null))
+    .pipe(
+      z
+        .string()
+        .nullable()
+        .refine(
+          (value) =>
+            value === null || z.string().url().safeParse(value).success,
+          "Please enter a valid image URL.",
+        ),
+    ),
+  slug: z
+    .string()
+    .trim()
+    .transform((value) => (value.length ? value : null))
+    .pipe(
+      z
+        .string()
+        .nullable()
+        .refine(
+          (value) => value === null || slugPattern.test(value),
+          "Slug can only contain lowercase letters, numbers, and hyphens.",
+        ),
+    ),
+})
+  .superRefine((data, ctx) => {
+    if (data.visibility === "public" && !data.categorySlug) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Please choose a category for public events.",
+        path: ["categorySlug"],
+      });
+    }
+  });
 
 export type EventFormInput = z.infer<typeof eventFormSchema>;

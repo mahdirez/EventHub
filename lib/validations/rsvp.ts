@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import type { Translator } from "@/lib/i18n";
+
 export const rsvpFormConstraints = {
   name: { minLength: 2, maxLength: 120 },
   email: { maxLength: 320 },
@@ -7,19 +9,21 @@ export const rsvpFormConstraints = {
 
 export const rsvpStatusSchema = z.enum(["going", "maybe", "not_going"]);
 
-export const rsvpFormSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(rsvpFormConstraints.name.minLength, "Name must be at least 2 characters.")
-    .max(rsvpFormConstraints.name.maxLength, "Name must be at most 120 characters."),
-  email: z
-    .string()
-    .trim()
-    .min(3, "Please enter a valid email.")
-    .max(rsvpFormConstraints.email.maxLength, "Email is too long.")
-    .pipe(z.email("Please enter a valid email.")),
-  status: rsvpStatusSchema,
-});
+export function createRsvpFormSchema(t: Translator) {
+  return z.object({
+    name: z
+      .string()
+      .trim()
+      .min(rsvpFormConstraints.name.minLength, t("validation.rsvp.nameMin"))
+      .max(rsvpFormConstraints.name.maxLength, t("validation.rsvp.nameMax")),
+    email: z
+      .string()
+      .trim()
+      .min(3, t("validation.rsvp.emailInvalid"))
+      .max(rsvpFormConstraints.email.maxLength, t("validation.rsvp.emailMax"))
+      .pipe(z.email(t("validation.rsvp.emailInvalid"))),
+    status: rsvpStatusSchema,
+  });
+}
 
-export type RsvpFormInput = z.infer<typeof rsvpFormSchema>;
+export type RsvpFormInput = z.infer<ReturnType<typeof createRsvpFormSchema>>;

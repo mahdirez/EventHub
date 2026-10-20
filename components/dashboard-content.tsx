@@ -5,22 +5,10 @@ import { OrganizerEventCard } from "@/components/design-system/organizer-event-c
 import { SurfaceCard } from "@/components/design-system/surface-card";
 import { EmptyState } from "./empty-state";
 import { OrganizerPageHeader } from "@/components/layout/organizer-page-header";
-import type { RsvpStatus as PrismaRsvpStatus } from "@/app/generated/prisma/enums";
+import { countByStatus } from "@/lib/event-rsvp-stats";
 import { formatEventSchedule } from "@/lib/copy";
 import { prisma } from "@/lib/prisma";
 import { getTranslations } from "@/lib/i18n/server";
-
-export function countByStatus(rsvps: { status: PrismaRsvpStatus }[]) {
-  let goingCount = 0;
-  let maybeCount = 0;
-  let notGoingCount = 0;
-  for (const r of rsvps) {
-    if (r.status === "going") goingCount += 1;
-    else if (r.status === "maybe") maybeCount += 1;
-    else if (r.status === "not_going") notGoingCount += 1;
-  }
-  return { goingCount, maybeCount, notGoingCount };
-}
 
 export async function DashboardContent({ userId }: { userId: string }) {
   const { t, dictionary } = await getTranslations();

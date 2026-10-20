@@ -1,14 +1,7 @@
+import { slugifyEventTitle } from "@/lib/slugify";
 import { prisma } from "@/lib/prisma";
 
-export function slugifyEventTitle(title: string): string {
-  const slug = title
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-  return slug.slice(0, 80);
-}
+export { slugifyEventTitle } from "@/lib/slugify";
 
 export async function ensureUniqueEventSlug(
   baseSlug: string,

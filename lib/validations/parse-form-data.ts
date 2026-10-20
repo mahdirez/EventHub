@@ -14,13 +14,16 @@ export function formDataToObject(formData: FormData): Record<string, string> {
   return result;
 }
 
-export function zodValidationError(error: ZodError): ActionState {
+export function zodValidationError(
+  error: ZodError,
+  fallbackMessage = "Please check the form and try again.",
+): ActionState {
   const { formErrors, fieldErrors } = flattenError(error);
   const fieldMessages = Object.values(fieldErrors).flat().filter(Boolean);
   const message =
     formErrors[0] ??
     fieldMessages[0] ??
-    "Please check the form and try again.";
+    fallbackMessage;
 
   return {
     error: message,
@@ -31,11 +34,15 @@ export function zodValidationError(error: ZodError): ActionState {
 export function parseFormData<T>(
   schema: ZodType<T>,
   formData: FormData,
+  options?: { fallbackMessage?: string },
 ): { success: true; data: T } | { success: false; state: ActionState } {
   const result = schema.safeParse(formDataToObject(formData));
 
   if (!result.success) {
-    return { success: false, state: zodValidationError(result.error) };
+    return {
+      success: false,
+      state: zodValidationError(result.error, options?.fallbackMessage),
+    };
   }
 
   return { success: true, data: result.data };

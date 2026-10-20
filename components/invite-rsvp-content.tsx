@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import { submitOrUpdateRsvpAction } from "@/lib/actions/events";
 import { formatCapacityLabel } from "@/lib/event-capacity";
 import { formatEventSchedule } from "@/lib/copy";
-import { countByStatus } from "./dashboard-content";
+import { countByStatus } from "@/lib/event-rsvp-stats";
 import { getTranslations } from "@/lib/i18n/server";
 import { InviteRsvpForm } from "./invite-rsvp-form";
 

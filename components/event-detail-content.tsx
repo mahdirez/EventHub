@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 
 import { SurfaceCard } from "@/components/design-system/surface-card";
 import { OrganizerPageHeader } from "@/components/layout/organizer-page-header";
-import { countByStatus } from "./dashboard-content";
+import { countByStatus } from "@/lib/event-rsvp-stats";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { EmptyState } from "./empty-state";

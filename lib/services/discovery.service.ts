@@ -12,22 +12,12 @@ import {
   publicEventSelect,
 } from "@/lib/services/discovery-mappers";
 
-export type DiscoveryEventCard = {
-  id: string;
-  slug: string;
-  title: string;
-  categoryId: MockCategoryId;
-  dateIso: string | null;
-  location: string;
-  description: string;
-  rsvpCount: number;
-  imageUrl: string;
-};
+import type {
+  DiscoveryCategory,
+  DiscoveryEventCard,
+} from "@/lib/types/discovery";
 
-export type DiscoveryCategory = {
-  id: MockCategoryId;
-  eventCount: number;
-};
+export type { DiscoveryCategory, DiscoveryEventCard };
 
 export async function getDiscoveryCategories(): Promise<DiscoveryCategory[]> {
   try {

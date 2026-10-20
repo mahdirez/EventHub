@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import type { Translator } from "@/lib/i18n";
 import { isCategoryId } from "@/lib/services/discovery-mappers";
 
 function emptyStringToNull(value: string) {
@@ -16,128 +17,134 @@ export const eventFormConstraints = {
   capacity: { min: 1, max: 10000 },
 } as const;
 
-export const eventFormSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(
-      eventFormConstraints.title.minLength,
-      "Title must be at least 3 characters.",
-    )
-    .max(
-      eventFormConstraints.title.maxLength,
-      "Title must be at most 120 characters.",
-    ),
-  description: z
-    .string()
-    .trim()
-    .max(
-      eventFormConstraints.description.maxLength,
-      "Description must be at most 2000 characters.",
-    )
-    .transform(emptyStringToNull),
-  location: z
-    .string()
-    .trim()
-    .max(
-      eventFormConstraints.location.maxLength,
-      "Location must be at most 200 characters.",
-    )
-    .transform(emptyStringToNull),
-  eventDate: z
-    .string()
-    .trim()
-    .transform((value) => (value.length ? value : null))
-    .pipe(
-      z
+export function createEventFormSchema(t: Translator) {
+  return z
+    .object({
+      title: z
         .string()
-        .nullable()
-        .refine(
-          (value) =>
-            value === null || !Number.isNaN(new Date(value).getTime()),
-          "Please enter a valid date and time.",
-        ),
-    ),
-  capacity: z
-    .string()
-    .trim()
-    .transform((value) => (value.length ? value : null))
-    .pipe(
-      z
-        .string()
-        .nullable()
-        .refine(
-          (value) => {
-            if (value === null) {
-              return true;
-            }
-
-            const parsed = Number(value);
-            return (
-              Number.isInteger(parsed) &&
-              parsed >= eventFormConstraints.capacity.min &&
-              parsed <= eventFormConstraints.capacity.max
-            );
-          },
-          `Capacity must be a whole number between ${eventFormConstraints.capacity.min} and ${eventFormConstraints.capacity.max}.`,
+        .trim()
+        .min(
+          eventFormConstraints.title.minLength,
+          t("validation.event.titleMin"),
         )
-        .transform((value) => (value === null ? null : Number(value))),
-    ),
-  visibility: z.enum(["private", "public"]),
-  categorySlug: z
-    .string()
-    .trim()
-    .transform((value) => (value.length ? value : null))
-    .pipe(
-      z
-        .string()
-        .nullable()
-        .refine(
-          (value) => value === null || isCategoryId(value),
-          "Please choose a valid category.",
+        .max(
+          eventFormConstraints.title.maxLength,
+          t("validation.event.titleMax"),
         ),
-    ),
-  city: z
-    .string()
-    .trim()
-    .max(120, "City must be at most 120 characters.")
-    .transform(emptyStringToNull),
-  coverImageUrl: z
-    .string()
-    .trim()
-    .transform((value) => (value.length ? value : null))
-    .pipe(
-      z
+      description: z
         .string()
-        .nullable()
-        .refine(
-          (value) =>
-            value === null || z.string().url().safeParse(value).success,
-          "Please enter a valid image URL.",
-        ),
-    ),
-  slug: z
-    .string()
-    .trim()
-    .transform((value) => (value.length ? value : null))
-    .pipe(
-      z
+        .trim()
+        .max(
+          eventFormConstraints.description.maxLength,
+          t("validation.event.descriptionMax"),
+        )
+        .transform(emptyStringToNull),
+      location: z
         .string()
-        .nullable()
-        .refine(
-          (value) => value === null || slugPattern.test(value),
-          "Slug can only contain lowercase letters, numbers, and hyphens.",
+        .trim()
+        .max(
+          eventFormConstraints.location.maxLength,
+          t("validation.event.locationMax"),
+        )
+        .transform(emptyStringToNull),
+      eventDate: z
+        .string()
+        .trim()
+        .transform((value) => (value.length ? value : null))
+        .pipe(
+          z
+            .string()
+            .nullable()
+            .refine(
+              (value) =>
+                value === null || !Number.isNaN(new Date(value).getTime()),
+              t("validation.event.eventDateInvalid"),
+            ),
         ),
-    ),
-})
-  .superRefine((data, ctx) => {
-    if (data.visibility === "public" && !data.categorySlug) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Please choose a category for public events.",
-        path: ["categorySlug"],
-      });
-    }
-  });
+      capacity: z
+        .string()
+        .trim()
+        .transform((value) => (value.length ? value : null))
+        .pipe(
+          z
+            .string()
+            .nullable()
+            .refine(
+              (value) => {
+                if (value === null) {
+                  return true;
+                }
 
-export type EventFormInput = z.infer<typeof eventFormSchema>;
+                const parsed = Number(value);
+                return (
+                  Number.isInteger(parsed) &&
+                  parsed >= eventFormConstraints.capacity.min &&
+                  parsed <= eventFormConstraints.capacity.max
+                );
+              },
+              t("validation.event.capacityRange", {
+                min: eventFormConstraints.capacity.min,
+                max: eventFormConstraints.capacity.max,
+              }),
+            )
+            .transform((value) => (value === null ? null : Number(value))),
+        ),
+      visibility: z.enum(["private", "public"]),
+      categorySlug: z
+        .string()
+        .trim()
+        .transform((value) => (value.length ? value : null))
+        .pipe(
+          z
+            .string()
+            .nullable()
+            .refine(
+              (value) => value === null || isCategoryId(value),
+              t("validation.event.categoryInvalid"),
+            ),
+        ),
+      city: z
+        .string()
+        .trim()
+        .max(120, t("validation.event.cityMax"))
+        .transform(emptyStringToNull),
+      coverImageUrl: z
+        .string()
+        .trim()
+        .transform((value) => (value.length ? value : null))
+        .pipe(
+          z
+            .string()
+            .nullable()
+            .refine(
+              (value) =>
+                value === null || z.string().url().safeParse(value).success,
+              t("validation.event.coverImageUrlInvalid"),
+            ),
+        ),
+      slug: z
+        .string()
+        .trim()
+        .transform((value) => (value.length ? value : null))
+        .pipe(
+          z
+            .string()
+            .nullable()
+            .refine(
+              (value) => value === null || slugPattern.test(value),
+              t("validation.event.slugInvalid"),
+            ),
+        ),
+    })
+    .superRefine((data, ctx) => {
+      if (data.visibility === "public" && !data.categorySlug) {
+        ctx.addIssue({
+          code: "custom",
+          message: t("validation.event.categoryRequiredPublic"),
+          path: ["categorySlug"],
+        });
+      }
+    });
+}
+
+export type EventFormInput = z.infer<ReturnType<typeof createEventFormSchema>>;

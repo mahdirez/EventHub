@@ -214,10 +214,35 @@ export const en = {
   },
   actions: {
     signInRequired: "You must be signed in to create an event.",
+    eventNotFound: "Event not found.",
     capacityTooLow:
       "Capacity cannot be less than the current number of going RSVPs ({count}).",
     inviteInvalid: "Invite link is invalid.",
     atCapacity: "This event is at capacity. Please choose Maybe or Not going.",
+  },
+  validation: {
+    generic: "Please check the form and try again.",
+    event: {
+      titleMin: "Title must be at least 3 characters.",
+      titleMax: "Title must be at most 120 characters.",
+      descriptionMax: "Description must be at most 2000 characters.",
+      locationMax: "Location must be at most 200 characters.",
+      eventDateInvalid: "Please enter a valid date and time.",
+      capacityRange:
+        "Capacity must be a whole number between {min} and {max}.",
+      categoryInvalid: "Please choose a valid category.",
+      categoryRequiredPublic: "Please choose a category for public events.",
+      cityMax: "City must be at most 120 characters.",
+      coverImageUrlInvalid: "Please enter a valid image URL.",
+      slugInvalid:
+        "Slug can only contain lowercase letters, numbers, and hyphens.",
+    },
+    rsvp: {
+      nameMin: "Name must be at least 2 characters.",
+      nameMax: "Name must be at most 120 characters.",
+      emailInvalid: "Please enter a valid email.",
+      emailMax: "Email is too long.",
+    },
   },
   auth: {
     description: "Sign in or create an EventHub account to manage your events.",

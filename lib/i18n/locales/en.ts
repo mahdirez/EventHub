@@ -62,7 +62,17 @@ export const en = {
     categoriesPageDescription: "Browse events by category.",
     myEventsPageTitle: "My events",
     myEventsPageDescription: "Events you saved or responded to.",
+    myEventsSignIn: "Sign in to see saved events and RSVPs tied to your email.",
+    myEventsSaved: "Saved events",
+    myEventsRsvps: "Your RSVPs",
+    myEventsEmptyTitle: "No saved events yet",
+    myEventsEmptyDescription:
+      "Explore events and tap the heart to save them here. RSVPs with your account email will also appear.",
+    myEventsSaveHint: "Tap the heart on any public event to save it for later.",
     myEventsEmpty: "Sign in to see events you favorite or RSVP to.",
+    noEventsTitle: "No events found",
+    noEventsDescription:
+      "Try different keywords or filters, or browse events by category.",
   },
   common: {
     dashboard: "Dashboard",
@@ -222,6 +232,15 @@ export const en = {
       "An unexpected error occurred. Please try again, or return to the dashboard if the problem continues.",
     tryAgain: "Try again",
     goDashboard: "Go to dashboard",
+  },
+  favorites: {
+    add: "Save event",
+    remove: "Remove from saved",
+    added: "Event saved",
+    removed: "Removed from saved events",
+    signInRequired: "Sign in to save events.",
+    signInToSave: "Sign in to save this event",
+    eventNotFound: "This event cannot be saved.",
   },
   theme: {
     light: "Light mode",

@@ -1,18 +1,17 @@
+import { CalendarSearchIcon } from "lucide-react";
 import { notFound } from "next/navigation";
 
-import { EventCard } from "@/components/design-system/event-card";
+import { EmptyState } from "@/components/empty-state";
 import { PageContainer } from "@/components/layout/page-container";
-import {
-  MOCK_CATEGORIES,
-  MOCK_POPULAR_EVENTS,
-  type MockCategoryId,
-} from "@/lib/constants/mock-discovery";
-import {
-  formatCompactCount,
-  formatEventDate,
-} from "@/lib/format-discovery";
+import { DiscoveryEventGrid } from "@/features/discovery/discovery-event-grid";
 import { createPageMetadata } from "@/lib/metadata";
 import { getTranslations } from "@/lib/i18n/server";
+import { isCategoryId } from "@/lib/services/discovery-mappers";
+import {
+  categoryExists,
+  searchPublicEvents,
+} from "@/lib/services/discovery.service";
+import { getFavoriteUiContext } from "@/lib/services/favorites.service";
 
 export async function generateMetadata({
   params,
@@ -21,11 +20,10 @@ export async function generateMetadata({
 }) {
   const { slug } = await params;
   const { t } = await getTranslations();
-  const category = MOCK_CATEGORIES.find((row) => row.id === slug);
 
   return createPageMetadata({
-    title: category
-      ? t(`discovery.categories.${category.id}`)
+    title: isCategoryId(slug)
+      ? t(`discovery.categories.${slug}`)
       : t("discovery.categoriesPageTitle"),
     description: t("discovery.categoriesPageDescription"),
   });
@@ -37,40 +35,37 @@ export default async function CategoryDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const category = MOCK_CATEGORIES.find((row) => row.id === slug);
   const { t, locale } = await getTranslations();
 
-  if (!category) {
+  if (!isCategoryId(slug) || !(await categoryExists(slug))) {
     notFound();
   }
 
-  const events = MOCK_POPULAR_EVENTS.filter(
-    (event) => event.categoryId === (slug as MockCategoryId),
-  );
+  const [events, favoriteContext] = await Promise.all([
+    searchPublicEvents({ category: slug }),
+    getFavoriteUiContext(),
+  ]);
 
   return (
     <PageContainer className="max-w-[1440px] gap-8">
       <h1 className="text-3xl font-semibold tracking-tight">
-        {t(`discovery.categories.${category.id}`)}
+        {t(`discovery.categories.${slug}`)}
       </h1>
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {events.map((event) => (
-          <EventCard
-            key={event.id}
-            title={event.title}
-            categoryId={event.categoryId}
-            categoryName={t(`discovery.categories.${event.categoryId}`)}
-            imageUrl={event.imageUrl}
-            scheduleLabel={`${formatEventDate(event.dateIso, locale)} • ${event.location}`}
-            description={event.description}
-            rsvpLabel={t("discovery.rsvps", {
-              count: formatCompactCount(event.rsvpCount),
-            })}
-            viewDetailsLabel={t("common.viewDetails")}
-            href={`/explore/${event.slug}`}
-          />
-        ))}
-      </div>
+      {events.length === 0 ? (
+        <EmptyState
+          icon={CalendarSearchIcon}
+          title={t("discovery.noEventsTitle")}
+          description={t("discovery.noEventsDescription")}
+        />
+      ) : (
+        <DiscoveryEventGrid
+          events={events}
+          locale={locale}
+          t={t}
+          favoriteEventIds={favoriteContext.favoriteEventIds}
+          isAuthenticated={favoriteContext.isAuthenticated}
+        />
+      )}
     </PageContainer>
   );
 }

@@ -1,8 +1,8 @@
-import { CategoryCard } from "@/components/design-system/category-card";
 import { PageContainer } from "@/components/layout/page-container";
-import { MOCK_CATEGORIES } from "@/lib/constants/mock-discovery";
+import { CategoryCard } from "@/components/design-system/category-card";
 import { createPageMetadata } from "@/lib/metadata";
 import { getTranslations } from "@/lib/i18n/server";
+import { getDiscoveryCategories } from "@/lib/services/discovery.service";
 
 export async function generateMetadata() {
   const { t } = await getTranslations();
@@ -15,6 +15,7 @@ export async function generateMetadata() {
 
 export default async function CategoriesPage() {
   const { t } = await getTranslations();
+  const categories = await getDiscoveryCategories();
 
   return (
     <PageContainer className="max-w-[1440px] gap-8">
@@ -27,7 +28,7 @@ export default async function CategoriesPage() {
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {MOCK_CATEGORIES.map((category) => (
+        {categories.map((category) => (
           <CategoryCard
             key={category.id}
             id={category.id}

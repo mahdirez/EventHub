@@ -1,10 +1,9 @@
 "use client";
 
-import { HeartIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
 
+import { EventFavoriteButton } from "@/components/design-system/event-favorite-button";
 import type { MockCategoryId } from "@/lib/constants/mock-discovery";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +17,7 @@ const categoryBadgeStyles: Record<MockCategoryId, string> = {
 };
 
 export function EventCard({
+  eventId,
   title,
   categoryId,
   categoryName,
@@ -27,7 +27,10 @@ export function EventCard({
   rsvpLabel,
   viewDetailsLabel,
   href,
+  favorited = false,
+  isAuthenticated = false,
 }: {
+  eventId: string;
   title: string;
   categoryId: MockCategoryId;
   categoryName: string;
@@ -37,9 +40,9 @@ export function EventCard({
   rsvpLabel: string;
   viewDetailsLabel: string;
   href: string;
+  favorited?: boolean;
+  isAuthenticated?: boolean;
 }) {
-  const [liked, setLiked] = useState(false);
-
   return (
     <article
       className={cn(
@@ -63,16 +66,11 @@ export function EventCard({
         >
           {categoryName}
         </span>
-        <button
-          type="button"
-          aria-label="Favorite"
-          className="absolute end-3 top-3 inline-flex size-9 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-sm transition hover:bg-black/50"
-          onClick={() => setLiked((value) => !value)}
-        >
-          <HeartIcon
-            className={cn("size-4", liked && "fill-red-500 text-red-500")}
-          />
-        </button>
+        <EventFavoriteButton
+          eventId={eventId}
+          initialFavorited={favorited}
+          isAuthenticated={isAuthenticated}
+        />
       </div>
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div>

@@ -62,7 +62,18 @@ export const fa = {
     categoriesPageDescription: "رویدادها را بر اساس دسته مرور کنید.",
     myEventsPageTitle: "رویدادهای من",
     myEventsPageDescription: "رویدادهایی که ذخیره یا به آن‌ها پاسخ داده‌اید.",
+    myEventsSignIn:
+      "برای دیدن رویدادهای ذخیره‌شده و RSVPهای مرتبط با ایمیل حساب خود وارد شوید.",
+    myEventsSaved: "رویدادهای ذخیره‌شده",
+    myEventsRsvps: "RSVPهای شما",
+    myEventsEmptyTitle: "هنوز رویدادی ذخیره نکرده‌اید",
+    myEventsEmptyDescription:
+      "رویدادها را مرور کنید و با زدن قلب اینجا ذخیره کنید. RSVP با ایمیل حساب شما هم نمایش داده می‌شود.",
+    myEventsSaveHint: "روی قلب هر رویداد عمومی بزنید تا بعداً اینجا ببینید.",
     myEventsEmpty: "برای دیدن رویدادهای ذخیره‌شده یا RSVP وارد شوید.",
+    noEventsTitle: "رویدادی پیدا نشد",
+    noEventsDescription:
+      "فیلترها یا عبارت جستجو را عوض کنید، یا از دسته‌بندی‌ها مرور کنید.",
   },
   common: {
     dashboard: "داشبورد",
@@ -223,6 +234,15 @@ export const fa = {
       "خطای غیرمنتظره‌ای رخ داد. دوباره تلاش کنید یا در صورت ادامه مشکل به داشبورد برگردید.",
     tryAgain: "تلاش دوباره",
     goDashboard: "رفتن به داشبورد",
+  },
+  favorites: {
+    add: "ذخیره رویداد",
+    remove: "حذف از ذخیره‌ها",
+    added: "رویداد ذخیره شد",
+    removed: "از ذخیره‌ها حذف شد",
+    signInRequired: "برای ذخیره رویداد وارد شوید.",
+    signInToSave: "برای ذخیره وارد شوید",
+    eventNotFound: "این رویداد قابل ذخیره نیست.",
   },
   theme: {
     light: "حالت روشن",

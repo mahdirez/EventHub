@@ -19,12 +19,14 @@ import {
   getDiscoveryCategories,
   getPopularDiscoveryEvents,
 } from "@/lib/services/discovery.service";
+import { getFavoriteUiContext } from "@/lib/services/favorites.service";
 
 export async function HomeContent() {
   const { t, locale } = await getTranslations();
-  const [categories, popularEvents] = await Promise.all([
+  const [categories, popularEvents, favoriteContext] = await Promise.all([
     getDiscoveryCategories(),
     getPopularDiscoveryEvents(),
+    getFavoriteUiContext(),
   ]);
 
   return (
@@ -105,6 +107,7 @@ export async function HomeContent() {
               {popularEvents.map((event) => (
                 <EventCard
                   key={event.id}
+                  eventId={event.id}
                   title={event.title}
                   categoryId={event.categoryId}
                   categoryName={t(`discovery.categories.${event.categoryId}`)}
@@ -120,6 +123,8 @@ export async function HomeContent() {
                   })}
                   viewDetailsLabel={t("common.viewDetails")}
                   href={`/explore/${event.slug}`}
+                  favorited={favoriteContext.favoriteEventIds.has(event.id)}
+                  isAuthenticated={favoriteContext.isAuthenticated}
                 />
               ))}
             </div>

@@ -1,7 +1,16 @@
 import { MOCK_CATEGORIES, MOCK_POPULAR_EVENTS } from "@/lib/constants/mock-discovery";
-import { PLACEHOLDER_IMAGES } from "@/lib/constants/placeholder-images";
 import type { MockCategoryId } from "@/lib/constants/mock-discovery";
 import { prisma } from "@/lib/prisma";
+import {
+  buildPublicEventWhere,
+  type ExploreFilters,
+  publicEventSlugWhere,
+} from "@/lib/services/discovery-filters";
+import {
+  isCategoryId,
+  mapEventRowToCard,
+  publicEventSelect,
+} from "@/lib/services/discovery-mappers";
 
 export type DiscoveryEventCard = {
   id: string;
@@ -19,26 +28,6 @@ export type DiscoveryCategory = {
   id: MockCategoryId;
   eventCount: number;
 };
-
-const categoryCoverFallback: Record<MockCategoryId, string> = {
-  technology: PLACEHOLDER_IMAGES.events.technology,
-  music: PLACEHOLDER_IMAGES.events.music,
-  business: PLACEHOLDER_IMAGES.events.business,
-  art: PLACEHOLDER_IMAGES.events.art,
-  education: PLACEHOLDER_IMAGES.events.technology,
-  sports: PLACEHOLDER_IMAGES.events.business,
-};
-
-function isCategoryId(value: string | null | undefined): value is MockCategoryId {
-  return (
-    value === "technology" ||
-    value === "music" ||
-    value === "business" ||
-    value === "art" ||
-    value === "education" ||
-    value === "sports"
-  );
-}
 
 export async function getDiscoveryCategories(): Promise<DiscoveryCategory[]> {
   try {
@@ -72,6 +61,49 @@ export async function getDiscoveryCategories(): Promise<DiscoveryCategory[]> {
   }
 }
 
+export async function categoryExists(slug: string): Promise<boolean> {
+  if (!isCategoryId(slug)) {
+    return false;
+  }
+
+  try {
+    const row = await prisma.category.findUnique({
+      where: { slug },
+      select: { slug: true },
+    });
+    return Boolean(row);
+  } catch {
+    return isCategoryId(slug);
+  }
+}
+
+export async function searchPublicEvents(
+  filters: ExploreFilters,
+): Promise<DiscoveryEventCard[]> {
+  const rows = await prisma.event.findMany({
+    where: buildPublicEventWhere(filters),
+    orderBy: [{ eventDate: "asc" }, { createdAt: "desc" }],
+    select: publicEventSelect,
+  });
+
+  return rows.map(mapEventRowToCard);
+}
+
+export async function getPublicEventBySlug(
+  slug: string,
+): Promise<DiscoveryEventCard | null> {
+  const row = await prisma.event.findFirst({
+    where: publicEventSlugWhere(slug),
+    select: publicEventSelect,
+  });
+
+  if (!row) {
+    return null;
+  }
+
+  return mapEventRowToCard(row);
+}
+
 export async function getPopularDiscoveryEvents(
   limit = 4,
 ): Promise<DiscoveryEventCard[]> {
@@ -80,44 +112,14 @@ export async function getPopularDiscoveryEvents(
       where: { visibility: "public" },
       orderBy: [{ eventDate: "asc" }, { createdAt: "desc" }],
       take: limit,
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        description: true,
-        location: true,
-        city: true,
-        eventDate: true,
-        categorySlug: true,
-        coverImageUrl: true,
-        rsvps: { select: { status: true } },
-      },
+      select: publicEventSelect,
     });
 
     if (rows.length === 0) {
       return MOCK_POPULAR_EVENTS;
     }
 
-    return rows.map((row) => {
-      const categoryId = isCategoryId(row.categorySlug)
-        ? row.categorySlug
-        : "technology";
-      const goingCount = row.rsvps.filter((r) => r.status === "going").length;
-      const maybeCount = row.rsvps.filter((r) => r.status === "maybe").length;
-
-      return {
-        id: row.id,
-        slug: row.slug ?? row.id,
-        title: row.title,
-        categoryId,
-        dateIso: row.eventDate?.toISOString() ?? null,
-        location: row.city ?? row.location ?? "",
-        description: row.description ?? "",
-        rsvpCount: goingCount + maybeCount,
-        imageUrl:
-          row.coverImageUrl ?? categoryCoverFallback[categoryId],
-      };
-    });
+    return rows.map(mapEventRowToCard);
   } catch {
     return MOCK_POPULAR_EVENTS;
   }

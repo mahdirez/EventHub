@@ -1,4 +1,5 @@
 import { EventForm } from "@/components/event-form";
+import { PageContainer } from "@/components/layout/page-container";
 import { createEventAction } from "@/lib/actions/events";
 import { createPageMetadata } from "@/lib/metadata";
 import { getTranslations } from "@/lib/i18n/server";
@@ -16,12 +17,14 @@ export default async function NewEventPage() {
   const { t } = await getTranslations();
 
   return (
-    <EventForm
-      title={t("event.createTitle")}
-      submitLabel={t("common.createEvent")}
-      pendingLabel={t("event.creating")}
-      cancelHref="/dashboard"
-      action={createEventAction}
-    />
+    <PageContainer>
+      <EventForm
+        title={t("event.createTitle")}
+        submitLabel={t("common.createEvent")}
+        pendingLabel={t("event.creating")}
+        cancelHref="/dashboard"
+        action={createEventAction}
+      />
+    </PageContainer>
   );
 }

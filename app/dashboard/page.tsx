@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/server";
 import { DashboardContent } from "@/components/dashboard-content";
+import { PageContainer } from "@/components/layout/page-container";
 import { createPageMetadata } from "@/lib/metadata";
 import { getTranslations } from "@/lib/i18n/server";
 
@@ -21,5 +22,9 @@ export default async function DashboardPage() {
     redirect("/auth");
   }
 
-  return <DashboardContent userId={userId} />;
+  return (
+    <PageContainer>
+      <DashboardContent userId={userId} />
+    </PageContainer>
+  );
 }

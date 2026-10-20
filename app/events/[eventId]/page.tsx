@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { EventDetailContent } from "@/components/event-detail-content";
+import { PageContainer } from "@/components/layout/page-container";
 import { getSession } from "@/lib/auth/server";
 import { createPageMetadata } from "@/lib/metadata";
 import { getTranslations } from "@/lib/i18n/server";
@@ -40,5 +41,9 @@ export default async function EventDetailsPage({
     redirect("/auth/sign-in");
   }
 
-  return <EventDetailContent userId={session.data.user.id} eventId={eventId} />;
+  return (
+    <PageContainer>
+      <EventDetailContent userId={session.data.user.id} eventId={eventId} />
+    </PageContainer>
+  );
 }

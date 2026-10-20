@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { InviteRsvpContent } from "@/components/invite-rsvp-content";
+import { PageContainer } from "@/components/layout/page-container";
 import { createPageMetadata } from "@/lib/metadata";
 import { getTranslations } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
@@ -43,10 +44,12 @@ export default async function InvitePage({
   const query = await searchParams;
 
   return (
-    <InviteRsvpContent
-      token={token}
-      submitted={query.submitted === "1"}
-      email={query.email}
-    />
+    <PageContainer>
+      <InviteRsvpContent
+        token={token}
+        submitted={query.submitted === "1"}
+        email={query.email}
+      />
+    </PageContainer>
   );
 }

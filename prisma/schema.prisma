@@ -18,22 +18,58 @@ enum RsvpStatus {
   not_going
 }
 
-model Event {
-  id          String    @id @default(uuid()) @db.Uuid
-  ownerUserId String    @map("owner_user_id")
-  title       String
-  description String?
-  location    String?
-  eventDate   DateTime? @map("event_date") @db.Timestamptz(6)
-  capacity    Int?      @map("capacity")
-  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+enum EventVisibility {
+  private
+  public
+}
 
-  invites EventInvite?
-  rsvps EventRsvp[]
+model Category {
+  slug      String @id
+  sortOrder Int    @default(0) @map("sort_order")
+
+  events Event[]
+
+  @@map("categories")
+}
+
+model Event {
+  id            String           @id @default(uuid()) @db.Uuid
+  ownerUserId   String           @map("owner_user_id")
+  title         String
+  description   String?
+  location      String?
+  city          String?
+  eventDate     DateTime?        @map("event_date") @db.Timestamptz(6)
+  capacity      Int?             @map("capacity")
+  visibility    EventVisibility  @default(private)
+  categorySlug  String?          @map("category_slug")
+  coverImageUrl String?          @map("cover_image_url")
+  slug          String?          @unique
+  createdAt     DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  category  Category?       @relation(fields: [categorySlug], references: [slug], onDelete: SetNull)
+  invites   EventInvite?
+  rsvps     EventRsvp[]
+  favorites EventFavorite[]
 
   @@index([ownerUserId, createdAt(sort: Desc)], map: "idx_events_owner")
+  @@index([visibility, eventDate(sort: Desc)], map: "idx_events_discovery")
+  @@index([categorySlug], map: "idx_events_category")
   @@map("events")
+}
+
+model EventFavorite {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id")
+  eventId   String   @map("event_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([userId, createdAt(sort: Desc)], map: "idx_favorites_user")
+  @@map("event_favorites")
 }
 
 model EventInvite {

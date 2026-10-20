@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 
 import { EventForm } from "@/components/event-form";
+import { PageContainer } from "@/components/layout/page-container";
 import { updateEventAction } from "@/lib/actions/events";
 import { getSession } from "@/lib/auth/server";
 import { createPageMetadata } from "@/lib/metadata";
@@ -62,7 +63,8 @@ export default async function EditEventPage({
   const { t } = await getTranslations();
 
   return (
-    <EventForm
+    <PageContainer>
+      <EventForm
       title={t("event.editTitle")}
       submitLabel={t("common.saveChanges")}
       pendingLabel={t("event.saving")}
@@ -76,5 +78,6 @@ export default async function EditEventPage({
         capacity: event.capacity,
       }}
     />
+    </PageContainer>
   );
 }

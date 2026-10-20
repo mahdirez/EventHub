@@ -39,7 +39,7 @@ export function AppHeaderNav() {
             {t(`nav.${link.key}`)}
             {active ? (
               <span
-                className="absolute -bottom-2 inset-x-0 mx-auto h-0.5 w-full max-w-[48px] rounded-full bg-[var(--accent)]"
+                className="absolute -bottom-2 inset-x-0 mx-auto h-0.5 w-full max-w-[48px] rounded-full bg-[var(--accent)]/70"
                 aria-hidden
               />
             ) : null}

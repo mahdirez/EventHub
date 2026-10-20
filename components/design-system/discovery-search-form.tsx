@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { PrimaryButton } from "@/components/design-system/primary-button";
 import { useI18n } from "@/components/i18n-provider";
 import type { MockCategoryId } from "@/lib/constants/mock-discovery";
+import { cn } from "@/lib/utils";
 
 const categoryIds: MockCategoryId[] = [
   "technology",
@@ -33,6 +34,9 @@ type DiscoverySearchFormProps = {
   defaultValues?: DiscoverySearchValues;
   className?: string;
 };
+
+const controlClassName =
+  "h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] ps-10 pe-3 text-sm text-foreground placeholder:text-[var(--muted-foreground)] outline-none transition-colors focus:border-[var(--accent-muted)]/60 focus:ring-2 focus:ring-[var(--accent)]/15";
 
 export function DiscoverySearchForm({
   defaultValues,
@@ -60,12 +64,14 @@ export function DiscoverySearchForm({
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className={className}
-    >
-      <div className="glass-panel flex flex-col gap-3 rounded-2xl p-3 lg:flex-row lg:items-center lg:gap-2">
-        <label className="relative flex min-h-11 flex-1 items-center">
+    <form onSubmit={onSubmit} className={cn("w-full", className)}>
+      <div
+        className={cn(
+          "glass-panel flex flex-col gap-2 rounded-2xl p-2 sm:p-3",
+          "lg:flex-row lg:items-stretch lg:gap-2",
+        )}
+      >
+        <label className="relative flex min-h-11 min-w-0 flex-1 items-center lg:min-w-[12rem]">
           <SearchIcon
             className="pointer-events-none absolute start-3 size-4 text-[var(--muted-foreground)]"
             aria-hidden
@@ -75,15 +81,22 @@ export function DiscoverySearchForm({
             type="search"
             defaultValue={defaultValues?.q ?? ""}
             placeholder={t("discovery.searchPlaceholder")}
-            className="h-11 w-full rounded-xl border border-transparent bg-[var(--surface-elevated)] ps-10 pe-3 text-sm text-foreground placeholder:text-[var(--muted-foreground)] outline-none focus:border-[var(--accent-muted)]/50"
+            className={controlClassName}
           />
         </label>
-        <div className="flex flex-wrap gap-2 lg:flex-nowrap">
+
+        <div
+          className={cn(
+            "grid grid-cols-1 gap-2 sm:grid-cols-2",
+            "lg:flex lg:flex-1 lg:flex-wrap lg:items-stretch lg:justify-end lg:gap-2",
+          )}
+        >
           <FilterSelect
             name="date"
             icon={CalendarIcon}
             defaultLabel={t("discovery.anyDate")}
             defaultValue={defaultValues?.date ?? ""}
+            className="sm:col-span-1"
           >
             <option value="week">{t("discovery.filters.week")}</option>
             <option value="month">{t("discovery.filters.month")}</option>
@@ -100,6 +113,7 @@ export function DiscoverySearchForm({
             icon={TagIcon}
             defaultLabel={t("discovery.allCategories")}
             defaultValue={defaultValues?.category ?? ""}
+            className="sm:col-span-2 lg:col-span-1"
           >
             {categoryIds.map((id) => (
               <option key={id} value={id}>
@@ -107,7 +121,11 @@ export function DiscoverySearchForm({
               </option>
             ))}
           </FilterSelect>
-          <PrimaryButton type="submit" className="w-full lg:w-auto" showArrow>
+          <PrimaryButton
+            type="submit"
+            className="h-11 w-full shrink-0 sm:col-span-2 lg:w-auto lg:min-w-[7.5rem]"
+            showArrow
+          >
             {t("discovery.search")}
           </PrimaryButton>
         </div>
@@ -123,6 +141,7 @@ function FilterSelect({
   defaultValue,
   children,
   isTextInput,
+  className,
 }: {
   name: string;
   icon: typeof CalendarIcon;
@@ -130,10 +149,16 @@ function FilterSelect({
   defaultValue: string;
   children?: React.ReactNode;
   isTextInput?: boolean;
+  className?: string;
 }) {
+  const wrapperClassName = cn(
+    "relative min-w-0 flex-1 lg:min-w-[9.5rem] lg:max-w-[11.5rem]",
+    className,
+  );
+
   if (isTextInput) {
     return (
-      <div className="relative min-w-[140px] flex-1 lg:flex-none">
+      <div className={wrapperClassName}>
         <Icon
           className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-[var(--muted-foreground)]"
           aria-hidden
@@ -143,14 +168,14 @@ function FilterSelect({
           type="text"
           defaultValue={defaultValue}
           placeholder={defaultLabel}
-          className="h-11 w-full rounded-xl border border-transparent bg-[var(--surface-elevated)] ps-10 pe-3 text-sm text-foreground placeholder:text-[var(--muted-foreground)] outline-none focus:border-[var(--accent-muted)]/50"
+          className={controlClassName}
         />
       </div>
     );
   }
 
   return (
-    <div className="relative min-w-[140px] flex-1 lg:flex-none">
+    <div className={wrapperClassName}>
       <Icon
         className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-[var(--muted-foreground)]"
         aria-hidden
@@ -158,14 +183,14 @@ function FilterSelect({
       <select
         name={name}
         defaultValue={defaultValue}
-        className="h-11 w-full appearance-none rounded-xl border border-transparent bg-[var(--surface-elevated)] ps-10 pe-8 text-sm text-foreground outline-none focus:border-[var(--accent-muted)]/50"
+        className={cn(controlClassName, "appearance-none pe-9")}
         aria-label={defaultLabel}
       >
         <option value="">{defaultLabel}</option>
         {children}
       </select>
       <ChevronDownIcon
-        className="pointer-events-none absolute end-2 top-1/2 size-4 -translate-y-1/2 text-[var(--muted-foreground)]"
+        className="pointer-events-none absolute end-3 top-1/2 size-4 -translate-y-1/2 text-[var(--muted-foreground)]"
         aria-hidden
       />
     </div>

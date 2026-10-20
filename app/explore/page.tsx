@@ -44,12 +44,12 @@ export default async function ExplorePage({
     page < result.pageCount ? buildExploreHref(filters, page + 1) : null;
 
   return (
-    <PageContainer className="max-w-[1440px] gap-8">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-semibold tracking-tight">
+    <PageContainer className="max-w-[1440px] gap-6 sm:gap-8">
+      <div className="space-y-2 border-b border-[var(--border)] pb-6">
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
           {t("discovery.explorePageTitle")}
         </h1>
-        <p className="text-sm text-[var(--muted-foreground)]">
+        <p className="max-w-2xl text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-[0.9375rem]">
           {t("discovery.explorePageDescription")}
         </p>
       </div>

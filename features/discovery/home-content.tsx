@@ -29,10 +29,14 @@ export async function HomeContent() {
     getFavoriteUiContext(),
   ]);
 
+  const pageGutter = "mx-auto w-full max-w-[1440px] px-4 sm:px-6";
+
   return (
-    <div className="flex flex-col gap-10 pb-12">
-      <section className="relative mx-4 overflow-hidden rounded-3xl border border-[var(--border)] sm:mx-6">
-        <div className="relative min-h-[min(520px,72vh)]">
+    <div className="flex flex-col gap-8 pb-10 sm:gap-10 sm:pb-12">
+      <section className="flex flex-col gap-4 sm:gap-5">
+        <div
+          className="relative min-h-[min(280px,46vh)] w-full sm:min-h-[min(320px,50vh)]"
+        >
           <Image
             src={PLACEHOLDER_IMAGES.hero}
             alt=""
@@ -42,47 +46,51 @@ export async function HomeContent() {
             sizes="100vw"
           />
           <div
-            className="absolute inset-0 bg-gradient-to-r from-[#050a14]/95 via-[#050a14]/70 to-[#050a14]/25"
+            className="absolute inset-0 bg-gradient-to-l from-[var(--background)]/95 via-[var(--background)]/45 to-transparent"
             aria-hidden
           />
           <div
-            className="absolute inset-0 bg-gradient-to-t from-[#050a14] via-transparent to-[#050a14]/30"
+            className="absolute inset-0 bg-gradient-to-t from-[var(--background)] via-transparent to-[var(--background)]/20"
             aria-hidden
           />
-          <div className="relative flex h-full flex-col justify-end gap-6 p-6 pb-8 sm:p-10 lg:max-w-3xl">
-            <span
-              className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--border)] bg-black/25 px-3 py-1 text-xs font-medium text-[var(--muted-foreground)] backdrop-blur-sm"
-            >
-              <SparklesIcon className="size-3.5 text-[var(--hero-highlight)]" />
-              {t("discovery.welcomeBadge")}
-            </span>
-            <div className="space-y-3">
-              <h1 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl">
-                {t("discovery.heroTitle1")}
-                <br />
-                <span className="text-gradient-hero">
-                  {t("discovery.heroTitle2")}
-                </span>
-              </h1>
-              <p className="max-w-xl text-sm leading-relaxed text-slate-300 sm:text-base">
-                {t("discovery.heroDescription")}
-              </p>
+          <div
+            className={`relative flex h-full min-h-[inherit] flex-col justify-end gap-4 pb-2 sm:gap-5 sm:pb-3 ${pageGutter}`}
+          >
+            <div className="w-full max-w-2xl">
+              <span
+                className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)]/80 px-3 py-1 text-xs font-medium text-[var(--muted-foreground)] backdrop-blur-sm"
+              >
+                <SparklesIcon className="size-3.5 text-[var(--accent)]" />
+                {t("discovery.welcomeBadge")}
+              </span>
+              <div className="mt-4 space-y-2 sm:mt-5 sm:space-y-3">
+                <h1 className="text-3xl font-bold leading-tight tracking-tight text-foreground sm:text-4xl lg:text-[2.5rem]">
+                  {t("discovery.heroTitle1")}
+                  <br />
+                  <span className="text-[var(--accent)]">
+                    {t("discovery.heroTitle2")}
+                  </span>
+                </h1>
+                <p className="max-w-lg text-sm leading-relaxed text-[var(--muted-foreground)] sm:text-[0.9375rem]">
+                  {t("discovery.heroDescription")}
+                </p>
+              </div>
             </div>
           </div>
         </div>
-        <div className="relative z-10 -mt-6 px-4 pb-6 sm:px-8 sm:pb-8">
+        <div className={pageGutter}>
           <HeroSearch />
         </div>
       </section>
 
-      <div className="mx-auto w-full max-w-[1440px] space-y-10 px-4 sm:px-6">
-        <section className="space-y-5">
+      <div className={`${pageGutter} flex flex-col gap-8 sm:gap-10`}>
+        <section className="space-y-4">
           <SectionHeading
             title={t("discovery.exploreCategories")}
             actionLabel={t("discovery.viewAllCategories")}
             actionHref="/categories"
           />
-          <div className="flex gap-3 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {categories.map((category) => (
               <CategoryCard
                 key={category.id}
@@ -96,14 +104,14 @@ export async function HomeContent() {
           </div>
         </section>
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_300px]">
-          <section className="space-y-5">
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-8">
+          <section className="min-w-0 space-y-4">
             <SectionHeading
               title={t("discovery.popularEvents")}
               actionLabel={t("discovery.viewAllEvents")}
               actionHref="/explore"
             />
-            <div className="grid gap-5 sm:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
               {popularEvents.map((event) => (
                 <EventCard
                   key={event.id}
@@ -130,7 +138,7 @@ export async function HomeContent() {
             </div>
           </section>
 
-          <div className="flex flex-col gap-5">
+          <aside className="flex flex-col gap-4 lg:sticky lg:top-[5.5rem] lg:gap-5">
             <CreateEventSidebar
               title={t("discovery.createCard.title")}
               description={t("discovery.createCard.description")}
@@ -146,11 +154,13 @@ export async function HomeContent() {
               description={t("discovery.promo.description")}
               ctaLabel={t("discovery.promo.cta")}
             />
-          </div>
+          </aside>
         </div>
 
-        <section className="flex flex-col gap-4 border-t border-[var(--border)] pt-8 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-xl font-semibold text-foreground">
+        <section
+          className="flex flex-col gap-4 border-t border-[var(--border)] pt-6 sm:flex-row sm:items-center sm:justify-between sm:pt-8"
+        >
+          <h2 className="text-lg font-semibold tracking-tight text-foreground sm:text-xl">
             {t("discovery.upcomingEvents")}
           </h2>
           <Suspense fallback={null}>

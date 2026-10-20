@@ -14,7 +14,7 @@ export function PromoCard({
 }) {
   return (
     <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-[var(--card-shadow)]">
-      <div className="relative h-28 w-full">
+      <div className="relative aspect-[16/7] w-full bg-[var(--surface-elevated)]">
         <Image
           src={PLACEHOLDER_IMAGES.promo}
           alt=""
@@ -22,14 +22,16 @@ export function PromoCard({
           className="object-cover"
           sizes="320px"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050a14]/85 via-[#050a14]/25 to-transparent" />
       </div>
       <div className="space-y-2 p-5">
         <h3 className="text-base font-semibold text-foreground">{title}</h3>
-        <p className="text-sm text-[var(--muted-foreground)]">{description}</p>
+        <p className="text-sm leading-relaxed text-[var(--muted-foreground)]">
+          {description}
+        </p>
         <Link
           href="/explore"
-          className="inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-muted)] hover:text-[var(--accent)]"
+          className="inline-flex items-center gap-1.5 pt-1 text-sm font-medium text-[var(--accent)] transition-colors hover:text-[var(--accent-strong)]"
         >
           {ctaLabel}
           <span aria-hidden className="rtl:rotate-180">→</span>

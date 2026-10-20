@@ -1,15 +1,11 @@
 import type { MockCategoryId } from "@/lib/constants/mock-discovery";
-import { PLACEHOLDER_IMAGES } from "@/lib/constants/placeholder-images";
+import {
+  categoryCoverFallback,
+  resolveDiscoveryImageUrl,
+} from "@/lib/discovery-images";
 import type { DiscoveryEventCard } from "@/lib/services/discovery.service";
 
-export const categoryCoverFallback: Record<MockCategoryId, string> = {
-  technology: PLACEHOLDER_IMAGES.events.technology,
-  music: PLACEHOLDER_IMAGES.events.music,
-  business: PLACEHOLDER_IMAGES.events.business,
-  art: PLACEHOLDER_IMAGES.events.art,
-  education: PLACEHOLDER_IMAGES.events.technology,
-  sports: PLACEHOLDER_IMAGES.events.business,
-};
+export { categoryCoverFallback };
 
 export function isCategoryId(
   value: string | null | undefined,
@@ -53,7 +49,7 @@ export function mapEventRowToCard(row: EventRow): DiscoveryEventCard {
     location: row.city ?? row.location ?? "",
     description: row.description ?? "",
     rsvpCount: goingCount + maybeCount,
-    imageUrl: row.coverImageUrl ?? categoryCoverFallback[categoryId],
+    imageUrl: resolveDiscoveryImageUrl(row.coverImageUrl, categoryId),
   };
 }
 

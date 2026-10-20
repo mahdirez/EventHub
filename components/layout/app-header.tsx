@@ -24,7 +24,7 @@ export async function AppHeader() {
         <div className="flex items-center gap-8">
           <Link href="/" className="inline-flex items-center gap-2.5">
             <span
-              className="inline-flex size-9 items-center justify-center rounded-xl bg-[var(--accent)] text-white shadow-[0_8px_24px_-8px_rgb(59_130_246_/_0.8)]"
+              className="inline-flex size-9 items-center justify-center rounded-xl bg-[var(--accent)] text-[var(--accent-foreground)]"
             >
               <CalendarDaysIcon className="size-5" aria-hidden />
             </span>

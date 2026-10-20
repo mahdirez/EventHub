@@ -1,10 +1,10 @@
-"use client";
-
-import Image from "next/image";
+import { UsersIcon } from "lucide-react";
 import Link from "next/link";
 
+import { EventCardCover } from "@/components/design-system/event-card-cover";
 import { EventFavoriteButton } from "@/components/design-system/event-favorite-button";
 import type { MockCategoryId } from "@/lib/constants/mock-discovery";
+import { categoryCoverFallback } from "@/lib/discovery-images";
 import { cn } from "@/lib/utils";
 
 const categoryBadgeStyles: Record<MockCategoryId, string> = {
@@ -43,24 +43,25 @@ export function EventCard({
   favorited?: boolean;
   isAuthenticated?: boolean;
 }) {
+  const fallbackUrl = categoryCoverFallback[categoryId];
+
   return (
     <article
       className={cn(
-        "flex flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]",
-        "shadow-[var(--card-shadow)]",
+        "group flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]",
+        "shadow-[var(--card-shadow)] transition-[border-color,box-shadow] duration-200",
+        "hover:border-[var(--accent-muted)]/35 hover:shadow-[0_20px_40px_-24px_rgb(0_0_0_/_0.55)]",
       )}
     >
-      <div className="relative aspect-[16/10] w-full">
-        <Image
-          src={imageUrl}
-          alt=""
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, 320px"
+      <div className="relative">
+        <EventCardCover
+          imageUrl={imageUrl}
+          fallbackUrl={fallbackUrl}
+          title={title}
         />
         <span
           className={cn(
-            "absolute start-3 top-3 rounded-md px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide",
+            "absolute start-3 top-3 rounded-lg px-2.5 py-1 text-xs font-medium",
             categoryBadgeStyles[categoryId],
           )}
         >
@@ -72,34 +73,32 @@ export function EventCard({
           isAuthenticated={isAuthenticated}
         />
       </div>
-      <div className="flex flex-1 flex-col gap-3 p-4">
-        <div>
-          <h3 className="text-base font-semibold text-foreground">{title}</h3>
-          <p className="mt-1 text-xs text-[var(--muted-foreground)]">
+      <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
+        <div className="space-y-1.5">
+          <h3 className="text-base font-semibold leading-snug text-foreground line-clamp-2">
+            {title}
+          </h3>
+          <p className="text-sm leading-relaxed text-[var(--muted-foreground)]">
             {scheduleLabel}
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex -space-x-2 rtl:space-x-reverse">
-            {[0, 1, 2].map((index) => (
-              <span
-                key={index}
-                className="inline-flex size-7 items-center justify-center rounded-full border-2 border-[var(--surface)] bg-[var(--surface-elevated)] text-[10px] font-medium text-[var(--muted-foreground)]"
-              >
-                {String.fromCharCode(65 + index)}
-              </span>
-            ))}
-          </div>
-          <span className="text-xs text-[var(--muted-foreground)]">
-            {rsvpLabel}
+        <div className="flex items-center gap-2 text-sm text-[var(--muted-foreground)]">
+          <span
+            className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-elevated)] text-[var(--accent-muted)]"
+            aria-hidden
+          >
+            <UsersIcon className="size-4" />
           </span>
+          <span>{rsvpLabel}</span>
         </div>
-        <p className="line-clamp-2 text-sm leading-relaxed text-[var(--muted-foreground)]">
-          {description}
-        </p>
+        {description ? (
+          <p className="line-clamp-2 text-sm leading-relaxed text-[var(--muted-foreground)]">
+            {description}
+          </p>
+        ) : null}
         <Link
           href={href}
-          className="mt-auto inline-flex items-center gap-1 text-sm font-medium text-[var(--accent-muted)] hover:text-[var(--accent)]"
+          className="mt-auto inline-flex items-center gap-1.5 pt-1 text-sm font-medium text-[var(--accent)] transition-colors hover:text-[var(--accent-strong)]"
         >
           {viewDetailsLabel}
           <span aria-hidden className="rtl:rotate-180">→</span>

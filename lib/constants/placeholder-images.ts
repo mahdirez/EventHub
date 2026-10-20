@@ -13,5 +13,9 @@ export const PLACEHOLDER_IMAGES = {
       "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=800&q=80",
     art:
       "https://images.unsplash.com/photo-1460661419341-fcc204c36f02?auto=format&fit=crop&w=800&q=80",
+    education:
+      "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80",
+    sports:
+      "https://images.unsplash.com/photo-1461896836934-ffe607ba7951?auto=format&fit=crop&w=800&q=80",
   },
 } as const;

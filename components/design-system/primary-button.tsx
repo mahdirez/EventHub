@@ -22,7 +22,7 @@ export function PrimaryButton({
   onClick,
 }: PrimaryButtonProps) {
   const classes = cn(
-    "inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold text-white transition hover:brightness-110 btn-primary-gradient",
+    "inline-flex h-11 items-center justify-center gap-2 rounded-xl px-5 text-sm font-semibold text-[var(--accent-foreground)] transition btn-primary-gradient",
     className,
   );
 
@@ -30,7 +30,9 @@ export function PrimaryButton({
     return (
       <Link href={href} className={classes}>
         {children}
-        {showArrow ? <ArrowRightIcon className="size-4" aria-hidden /> : null}
+        {showArrow ? (
+          <ArrowRightIcon className="size-4 rtl:rotate-180" aria-hidden />
+        ) : null}
       </Link>
     );
   }
@@ -38,7 +40,9 @@ export function PrimaryButton({
   return (
     <button type={type} className={classes} onClick={onClick}>
       {children}
-      {showArrow ? <ArrowRightIcon className="size-4" aria-hidden /> : null}
+      {showArrow ? (
+        <ArrowRightIcon className="size-4 rtl:rotate-180" aria-hidden />
+      ) : null}
     </button>
   );
 }

@@ -15,8 +15,8 @@
   --accent: #2563eb;
   --accent-strong: #1d4ed8;
   --accent-foreground: #ffffff;
-  --accent-muted: #3b82f6;
-  --hero-highlight: #38bdf8;
+  --accent-muted: #2563eb;
+  --hero-highlight: #2563eb;
   --glass: rgb(255 255 255 / 0.72);
   --glass-border: rgb(15 23 42 / 0.08);
   --card-shadow: 0 24px 48px -24px rgb(15 23 42 / 0.18);
@@ -66,8 +66,8 @@ body {
   --accent: #3b82f6;
   --accent-strong: #2563eb;
   --accent-foreground: #ffffff;
-  --accent-muted: #60a5fa;
-  --hero-highlight: #38bdf8;
+  --accent-muted: #3b82f6;
+  --hero-highlight: #3b82f6;
   --glass: rgb(8 15 30 / 0.72);
   --glass-border: rgb(148 163 184 / 0.12);
   --card-shadow: 0 28px 56px -28px rgb(0 0 0 / 0.65);
@@ -87,17 +87,11 @@ body {
 }
 
 .dark body {
-  background-image:
-    radial-gradient(
-      900px circle at 12% -8%,
-      rgb(59 130 246 / 0.14),
-      transparent 42%
-    ),
-    radial-gradient(
-      700px circle at 88% 0%,
-      rgb(56 189 248 / 0.08),
-      transparent 40%
-    );
+  background-image: radial-gradient(
+    1000px circle at 50% -20%,
+    rgb(59 130 246 / 0.06),
+    transparent 55%
+  );
 }
 
 @layer base {
@@ -124,23 +118,17 @@ body {
 }
 
 @layer utilities {
-  .text-gradient-hero {
-    background: linear-gradient(90deg, #38bdf8 0%, #3b82f6 55%, #60a5fa 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+  .btn-primary-gradient {
+    background: var(--accent);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.08) inset;
   }
 
-  .btn-primary-gradient {
-    background: linear-gradient(180deg, #4f9cf9 0%, #2563eb 100%);
-    box-shadow:
-      0 1px 0 rgb(255 255 255 / 0.12) inset,
-      0 8px 24px -8px rgb(37 99 235 / 0.65);
+  .btn-primary-gradient:hover {
+    background: var(--accent-strong);
   }
 
   .glass-panel {
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(16px);
+    background: var(--surface);
+    border: 1px solid var(--border);
   }
 }

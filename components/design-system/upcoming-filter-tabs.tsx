@@ -33,7 +33,9 @@ export function UpcomingFilterTabs({
   }
 
   return (
-    <div className="inline-flex rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1">
+    <div
+      className="inline-flex max-w-full flex-wrap rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1"
+    >
       {tabs.map((tab) => {
         const active = isTabActive(tab.id);
         return (
@@ -43,7 +45,7 @@ export function UpcomingFilterTabs({
             className={cn(
               "rounded-lg px-3 py-1.5 text-xs font-medium transition",
               active
-                ? "bg-[var(--accent)] text-white"
+                ? "bg-[var(--surface-elevated)] text-foreground ring-1 ring-[var(--accent)]/25"
                 : "text-[var(--muted-foreground)] hover:text-foreground",
             )}
           >

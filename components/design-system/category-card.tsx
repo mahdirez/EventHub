@@ -45,20 +45,23 @@ export function CategoryCard({
     <Link
       href={`/categories/${id}`}
       className={cn(
-        "flex min-w-[148px] flex-col gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 transition hover:border-[var(--accent-muted)]/40 hover:bg-[var(--surface-elevated)]",
-        "shadow-[var(--card-shadow)]",
+        "flex h-full min-h-[7.5rem] flex-col gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4",
+        "shadow-[var(--card-shadow)] transition-[border-color,background-color] duration-200",
+        "hover:border-[var(--accent-muted)]/40 hover:bg-[var(--surface-elevated)]",
       )}
     >
       <span
         className={cn(
-          "inline-flex size-10 items-center justify-center rounded-xl",
+          "inline-flex size-10 shrink-0 items-center justify-center rounded-xl",
           categoryAccent[id],
         )}
       >
         <Icon className="size-5" aria-hidden />
       </span>
-      <div>
-        <p className="text-sm font-semibold text-foreground">{name}</p>
+      <div className="mt-auto space-y-0.5">
+        <p className="text-sm font-semibold leading-snug text-foreground">
+          {name}
+        </p>
         <p className="text-xs text-[var(--muted-foreground)]">{eventsLabel}</p>
       </div>
     </Link>

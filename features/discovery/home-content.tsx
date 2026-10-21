@@ -46,7 +46,7 @@ export async function HomeContent() {
             sizes="100vw"
           />
           <div
-            className="absolute inset-0 bg-gradient-to-l from-[var(--background)]/95 via-[var(--background)]/45 to-transparent"
+            className="absolute inset-0 from-[var(--background)]/95 via-[var(--background)]/45 to-transparent ltr:bg-gradient-to-r rtl:bg-gradient-to-l"
             aria-hidden
           />
           <div

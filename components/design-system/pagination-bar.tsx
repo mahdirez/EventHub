@@ -10,6 +10,7 @@ export function PaginationBar({
   previousLabel,
   nextLabel,
   pageLabel,
+  navAriaLabel,
 }: {
   page: number;
   pageCount: number;
@@ -18,6 +19,7 @@ export function PaginationBar({
   previousLabel: string;
   nextLabel: string;
   pageLabel: string;
+  navAriaLabel: string;
 }) {
   if (pageCount <= 1) {
     return null;
@@ -26,7 +28,7 @@ export function PaginationBar({
   return (
     <nav
       className="flex flex-col items-center justify-between gap-3 border-t border-[var(--border)] pt-6 sm:flex-row"
-      aria-label="Pagination"
+      aria-label={navAriaLabel}
     >
       <p className="text-sm text-[var(--muted-foreground)]">{pageLabel}</p>
       <div className="flex items-center gap-2">

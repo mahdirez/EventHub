@@ -13,10 +13,10 @@ export async function GET(
   const { eventId } = await context.params;
   const session = await getSession();
   const userId = session.data?.user?.id;
-  const { dictionary } = await getTranslations();
+  const { t, dictionary } = await getTranslations();
 
   if (!userId) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response(t("api.unauthorized"), { status: 401 });
   }
 
   const event = await prisma.event.findFirst({
@@ -25,7 +25,7 @@ export async function GET(
   });
 
   if (!event) {
-    return new Response("Not found", { status: 404 });
+    return new Response(t("api.notFound"), { status: 404 });
   }
 
   const rsvps = await prisma.eventRsvp.findMany({

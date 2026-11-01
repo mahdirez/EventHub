@@ -67,6 +67,7 @@ export async function toggleFavoriteAction(
     revalidateFavoritePaths();
     return actionSuccess(t("favorites.added"));
   } catch (error) {
-    return actionError(getErrorMessage(error));
+    const { t } = await getTranslations();
+    return actionError(getErrorMessage(error, t("common.unexpectedError")));
   }
 }

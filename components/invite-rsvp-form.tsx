@@ -91,7 +91,7 @@ export function InviteRsvpForm({
           className="pointer-events-none absolute -left-[9999px] h-0 w-0 overflow-hidden"
           aria-hidden
         >
-          <label htmlFor={RSVP_HONEYPOT_FIELD}>Company</label>
+          <label htmlFor={RSVP_HONEYPOT_FIELD}>{t("rsvp.honeypotLabel")}</label>
           <input
             id={RSVP_HONEYPOT_FIELD}
             name={RSVP_HONEYPOT_FIELD}

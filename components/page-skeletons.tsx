@@ -1,15 +1,6 @@
+import { PageLoadingIndicator } from "@/components/page-loading-indicator";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Spinner } from "@/components/ui/spinner";
-
-export function PageLoadingIndicator() {
-  return (
-    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-      <Spinner className="size-4" />
-      <span>Loading...</span>
-    </div>
-  );
-}
 
 export function DashboardPageSkeleton() {
   return (

@@ -134,6 +134,7 @@ export async function DashboardContent({
             page: safePage,
             total: pageCount,
           })}
+          navAriaLabel={t("a11y.pagination")}
         />
         </>
       )}

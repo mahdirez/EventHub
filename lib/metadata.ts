@@ -79,18 +79,11 @@ const accountPageTitleKeys: Record<string, keyof Dictionary["account"]> = {
 export function getAuthPageTitle(path: string, t: Translator): string {
   const key = authPageTitleKeys[path];
 
-  return key ? t(`auth.${key}`) : titleFromPath(path);
+  return key ? t(`auth.${key}`) : t("auth.signIn");
 }
 
 export function getAccountPageTitle(path: string, t: Translator): string {
   const key = accountPageTitleKeys[path];
 
-  return key ? t(`account.${key}`) : titleFromPath(path);
-}
-
-function titleFromPath(path: string): string {
-  return path
-    .split("-")
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ");
+  return key ? t(`account.${key}`) : t("account.settings");
 }

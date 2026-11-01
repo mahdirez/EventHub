@@ -42,7 +42,7 @@ function mapEventServiceError(error: unknown, t: (key: string) => string) {
     }
   }
 
-  return actionError(getErrorMessage(error));
+  return actionError(getErrorMessage(error, t("common.unexpectedError")));
 }
 
 export async function createEventAction(
@@ -230,7 +230,7 @@ export async function submitOrUpdateRsvpAction(
         return actionError(t("actions.atCapacity"));
       }
     }
-    return actionError(getErrorMessage(error));
+    return actionError(getErrorMessage(error, t("common.unexpectedError")));
   }
 
   revalidateDiscoveryPaths();

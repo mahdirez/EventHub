@@ -89,6 +89,7 @@ export default async function ExplorePage({
               page: result.page,
               total: result.pageCount,
             })}
+            navAriaLabel={t("a11y.pagination")}
           />
         </>
       )}

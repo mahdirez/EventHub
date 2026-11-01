@@ -106,6 +106,18 @@ export const en = {
     attendees: "Attendees",
     inviteLink: "Invite link",
     noDateSet: "No date set",
+    loading: "Loading…",
+    pleaseWait: "Please wait…",
+    unexpectedError: "Something went wrong. Please try again.",
+  },
+  a11y: {
+    mainNav: "Main navigation",
+    pagination: "Pagination",
+    loading: "Loading",
+  },
+  api: {
+    unauthorized: "Unauthorized",
+    notFound: "Not found",
   },
   home: {
     badge: "Next.js 16 + Neon Auth + Neon Postgres",
@@ -207,6 +219,7 @@ export const en = {
     },
     metadataDescription: "Submit your RSVP for this event.",
     metadataFor: "Respond to {title} on EventHub.",
+    honeypotLabel: "Company",
   },
   badges: {
     going: "Going: {count}",

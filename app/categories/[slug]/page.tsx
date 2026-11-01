@@ -90,6 +90,7 @@ export default async function CategoryDetailPage({
               page: result.page,
               total: result.pageCount,
             })}
+            navAriaLabel={t("a11y.pagination")}
           />
         </>
       )}

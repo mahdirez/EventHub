@@ -12,10 +12,13 @@ export function actionSuccess(message: string): ActionState {
   return { success: message };
 }
 
-export function getErrorMessage(error: unknown): string {
+export function getErrorMessage(
+  error: unknown,
+  fallbackMessage: string,
+): string {
   if (error instanceof Error && error.message) {
     return error.message;
   }
 
-  return "Something went wrong. Please try again.";
+  return fallbackMessage;
 }

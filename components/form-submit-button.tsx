@@ -3,6 +3,7 @@
 import { useFormStatus } from "react-dom";
 
 import { Button } from "@/components/ui/button";
+import { useI18n } from "@/components/i18n-provider";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 
@@ -18,6 +19,7 @@ export function FormSubmitButton({
   ...props
 }: FormSubmitButtonProps) {
   const { pending } = useFormStatus();
+  const { t } = useI18n();
 
   return (
     <Button
@@ -28,8 +30,8 @@ export function FormSubmitButton({
     >
       {pending ? (
         <>
-          <Spinner className="size-4" />
-          {pendingLabel ?? "Please wait..."}
+          <Spinner className="size-4" aria-label={t("a11y.loading")} />
+          {pendingLabel ?? t("common.pleaseWait")}
         </>
       ) : (
         children

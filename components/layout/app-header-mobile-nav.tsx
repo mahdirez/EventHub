@@ -20,7 +20,7 @@ export function AppHeaderMobileNav() {
   return (
     <nav
       className="flex gap-2 overflow-x-auto border-b border-[var(--border)] px-4 py-2 lg:hidden [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-      aria-label="Main"
+      aria-label={t("a11y.mainNav")}
     >
       {links.map((link) => {
         const active =

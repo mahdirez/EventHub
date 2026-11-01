@@ -107,6 +107,18 @@ export const fa = {
     attendees: "شرکت‌کنندگان",
     inviteLink: "لینک دعوت",
     noDateSet: "تاریخی تنظیم نشده",
+    loading: "در حال بارگذاری…",
+    pleaseWait: "لطفاً صبر کنید…",
+    unexpectedError: "مشکلی پیش آمد. لطفاً دوباره تلاش کنید.",
+  },
+  a11y: {
+    mainNav: "ناوبری اصلی",
+    pagination: "صفحه‌بندی",
+    loading: "در حال بارگذاری",
+  },
+  api: {
+    unauthorized: "دسترسی مجاز نیست",
+    notFound: "پیدا نشد",
   },
   home: {
     badge: "Next.js 16 + Neon Auth + Neon Postgres",
@@ -209,6 +221,7 @@ export const fa = {
     },
     metadataDescription: "RSVP خود را برای این رویداد ثبت کنید.",
     metadataFor: "پاسخ خود را برای {title} در EventHub ثبت کنید.",
+    honeypotLabel: "Company",
   },
   badges: {
     going: "شرکت: {count}",

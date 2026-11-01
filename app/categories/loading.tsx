@@ -1,4 +1,3 @@
-import { DiscoveryEventGridSkeleton } from "@/components/design-system/discovery-event-grid-skeleton";
 import { PageContainer } from "@/components/layout/page-container";
 import { Skeleton } from "@/components/ui/skeleton";
 

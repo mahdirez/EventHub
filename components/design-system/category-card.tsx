@@ -1,3 +1,4 @@
+import { createElement } from "react";
 import Link from "next/link";
 
 import {
@@ -15,8 +16,6 @@ export function CategoryCard({
   name: string;
   eventsLabel: string;
 }) {
-  const Icon = getCategoryIcon(slug);
-
   return (
     <Link
       href={`/categories/${slug}`}
@@ -32,7 +31,10 @@ export function CategoryCard({
           getCategoryAccentClass(slug),
         )}
       >
-        <Icon className="size-5" aria-hidden />
+        {createElement(getCategoryIcon(slug), {
+          className: "size-5",
+          "aria-hidden": true,
+        })}
       </span>
       <div className="mt-auto space-y-0.5">
         <p className="text-sm font-semibold leading-snug text-foreground">

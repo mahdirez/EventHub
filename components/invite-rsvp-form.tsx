@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect } from "react";
 
 import { useI18n } from "@/components/i18n-provider";
 import { FormSubmitButton } from "@/components/form-submit-button";
@@ -43,20 +43,12 @@ export function InviteRsvpForm({
   const { t } = useI18n();
   const [state, formAction] = useActionState(action, null);
   useActionToast(state);
-  const [defaults, setDefaults] = useState<StoredRsvp | null>(
-    existingRsvp ?? null,
-  );
+
+  const defaults = existingRsvp ?? getStoredRsvp(token);
 
   useEffect(() => {
     if (existingRsvp) {
-      setDefaults(existingRsvp);
       setStoredRsvp(token, existingRsvp);
-      return;
-    }
-
-    const stored = getStoredRsvp(token);
-    if (stored) {
-      setDefaults(stored);
     }
   }, [existingRsvp, token]);
 

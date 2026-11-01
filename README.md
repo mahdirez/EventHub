@@ -123,6 +123,18 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ---
 
+## Continuous integration
+
+On push and pull requests to `main` / `master`, GitHub Actions runs:
+
+1. `npm run lint`
+2. `npm test`
+3. `npm run build`
+
+Workflow file: `.github/workflows/ci.yml`. CI uses dummy `DATABASE_URL` and Neon Auth env vars so Prisma client generation and the Next.js build can run without a real database.
+
+---
+
 ## 📁 Project Structure
 
 ```

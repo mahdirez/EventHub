@@ -2,7 +2,7 @@
 
 import { MoonIcon, SunIcon } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import { HeaderIconButton } from "@/components/layout/header-icon-button";
 import { useI18n } from "@/components/i18n-provider";
@@ -10,11 +10,11 @@ import { useI18n } from "@/components/i18n-provider";
 export function HeaderThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const { t } = useI18n();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   if (!mounted) {
     return (

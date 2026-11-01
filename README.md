@@ -151,7 +151,7 @@ lib/
 prisma/
   schema.prisma       # Database schema
   migrations/         # SQL migrations
-proxy.ts              # Route protection for /dashboard and /events
+proxy.ts              # Auth proxy for organizer and signed-in-only app routes
 ```
 
 ---
@@ -176,7 +176,42 @@ proxy.ts              # Route protection for /dashboard and /events
 3. View saved events and past RSVPs on **My events** (RSVPs linked by account email)
 
 **Route protection**
-`proxy.ts` guards `/dashboard` and `/events`. Unauthenticated users are redirected to `/auth/sign-in`. Public routes include home, explore, categories, invite links, and auth pages. `/my-events` shows a sign-in prompt when logged out.
+
+Unauthenticated visitors are redirected to `/auth/sign-in` by `proxy.ts` on these paths:
+
+| Protected (proxy) | Purpose |
+| --- | --- |
+| `/dashboard/*` | Organizer dashboard |
+| `/events/*` | Create, view, and edit your events |
+| `/my-events/*` | Saved favorites and RSVPs for your account |
+| `/account/*` | Neon Auth account settings |
+
+**Public pages** (no proxy; no sign-in required to view):
+
+| Public | Purpose |
+| --- | --- |
+| `/` | Home / discovery landing |
+| `/explore`, `/explore/[slug]` | Search and public event details |
+| `/categories`, `/categories/[slug]` | Browse by category |
+| `/invite/[token]` | Guest RSVP |
+| `/auth/*` | Sign-in and sign-up |
+
+**API routes** (not handled by `proxy.ts`; each handler checks auth):
+
+| Route | Access |
+| --- | --- |
+| `/api/auth/*` | Neon Auth |
+| `/api/events/[eventId]/attendees/export` | Session required; event owner only |
+
+**Server actions**
+
+| Action | Auth |
+| --- | --- |
+| `submitOrUpdateRsvpAction` | Public (valid invite token) |
+| `createEventAction`, `updateEventAction`, `deleteEventAction`, `createInviteLinkAction` | Signed-in owner |
+| `toggleFavoriteAction` | Signed-in user |
+
+Server Action POST requests skip the proxy matcher so actions enforce their own rules (for example public RSVP).
 
 ---
 

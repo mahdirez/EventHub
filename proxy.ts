@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
+/** Protected paths: /dashboard, /events, /my-events, /account (see README). */
+
 function isServerActionPost(request: NextRequest) {
   if (request.method !== "POST") {
     return false;
@@ -19,5 +21,10 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/events/:path*"],
+  matcher: [
+    "/dashboard/:path*",
+    "/events/:path*",
+    "/my-events/:path*",
+    "/account/:path*",
+  ],
 };

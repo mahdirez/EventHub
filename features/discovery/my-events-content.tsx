@@ -10,30 +10,22 @@ import {
   getFavoriteUiContext,
 } from "@/lib/services/favorites.service";
 import { getRsvpEventsForUserEmail } from "@/lib/services/my-events.service";
-import { getSession } from "@/lib/auth/server";
 import { getTranslations } from "@/lib/i18n/server";
 
-export async function MyEventsContent() {
-  const { t, locale } = await getTranslations();
-  const session = await getSession();
-  const user = session.data?.user;
+type MyEventsContentProps = {
+  userId: string;
+  userEmail: string | undefined;
+};
 
-  if (!user?.id) {
-    return (
-      <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
-        <p className="text-sm text-[var(--muted-foreground)]">
-          {t("discovery.myEventsSignIn")}
-        </p>
-        <Button asChild className="mt-4">
-          <Link href="/auth/sign-in">{t("auth.signIn")}</Link>
-        </Button>
-      </div>
-    );
-  }
+export async function MyEventsContent({
+  userId,
+  userEmail,
+}: MyEventsContentProps) {
+  const { t, locale } = await getTranslations();
 
   const [favorites, rsvpEvents, favoriteContext] = await Promise.all([
-    getFavoriteEventsForUser(user.id),
-    getRsvpEventsForUserEmail(user.email),
+    getFavoriteEventsForUser(userId),
+    getRsvpEventsForUserEmail(userEmail),
     getFavoriteUiContext(),
   ]);
 

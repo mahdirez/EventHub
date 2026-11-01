@@ -86,6 +86,10 @@ export async function updateEventAction(
     const userId = session.data?.user?.id;
     const { t } = await getTranslations();
 
+    if (!userId) {
+      return actionError(t("actions.signInRequired"));
+    }
+
     const parsed = parseFormData(createEventFormSchema(t), formData, {
       fallbackMessage: t("validation.generic"),
     });
@@ -125,6 +129,11 @@ export async function deleteEventAction(
   try {
     const session = await getSession();
     const userId = session.data?.user?.id;
+    const { t } = await getTranslations();
+
+    if (!userId) {
+      return actionError(t("actions.signInRequired"));
+    }
 
     await requireEventOwner(eventId, userId);
     await deleteEventForOwner(eventId);
@@ -147,6 +156,10 @@ export async function createInviteLinkAction(
     const session = await getSession();
     const userId = session.data?.user?.id;
     const { t } = await getTranslations();
+
+    if (!userId) {
+      return actionError(t("actions.signInRequired"));
+    }
 
     await requireEventOwner(eventId, userId);
     await upsertInviteToken(eventId);

@@ -11,9 +11,9 @@ import { EmptyState } from "./empty-state";
 import { createInviteLinkAction, deleteEventAction } from "@/lib/actions/events";
 import { formatCapacityLabel } from "@/lib/event-capacity";
 import { formatEventSchedule, formatRsvpStatus } from "@/lib/copy";
+import { getCategoryLabel } from "@/lib/category-label";
 import { getTranslations } from "@/lib/i18n/server";
 import { prisma } from "@/lib/prisma";
-import { isCategoryId } from "@/lib/services/discovery-mappers";
 import { DeleteEventDialog } from "./delete-event-dialog";
 import { CopyInviteLinkButton } from "./copy-invite-link-button";
 import { GenerateInviteForm } from "./generate-invite-form";
@@ -161,9 +161,9 @@ export async function EventDetailContent({
             ? t("event.form.visibilityPublic")
             : t("event.form.visibilityPrivate")}
         </Badge>
-        {event.categorySlug && isCategoryId(event.categorySlug) ? (
+        {event.categorySlug ? (
           <Badge variant="outline">
-            {t(`discovery.categories.${event.categorySlug}`)}
+            {getCategoryLabel(t, event.categorySlug)}
           </Badge>
         ) : null}
         <Badge>{t("badges.going", { count: event.goingCount })}</Badge>

@@ -12,7 +12,7 @@ import {
 import { createPageMetadata } from "@/lib/metadata";
 import { getTranslations } from "@/lib/i18n/server";
 import { parseExploreFilters } from "@/lib/services/discovery-filters";
-import { searchPublicEventsPaginated } from "@/lib/services/discovery.service";
+import { searchPublicEventsPaginated, getDiscoveryCategories } from "@/lib/services/discovery.service";
 import { getFavoriteUiContext } from "@/lib/services/favorites.service";
 
 export async function generateMetadata() {
@@ -33,9 +33,10 @@ export default async function ExplorePage({
   const filters = parseExploreFilters(query);
   const page = parsePageParam(query.page);
   const { t, locale } = await getTranslations();
-  const [result, favoriteContext] = await Promise.all([
+  const [result, favoriteContext, categories] = await Promise.all([
     searchPublicEventsPaginated(filters, page),
     getFavoriteUiContext(),
+    getDiscoveryCategories(),
   ]);
 
   const previousHref =
@@ -61,6 +62,9 @@ export default async function ExplorePage({
           location: filters.location,
           category: filters.category,
         }}
+        categoryOptions={categories.map((category) => ({
+          slug: category.slug,
+        }))}
       />
 
       {result.events.length === 0 ? (

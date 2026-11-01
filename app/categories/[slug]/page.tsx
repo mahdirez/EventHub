@@ -9,9 +9,9 @@ import {
   buildCategoryHref,
   parsePageParam,
 } from "@/lib/discovery-pagination";
+import { getCategoryLabel } from "@/lib/category-label";
 import { createPageMetadata } from "@/lib/metadata";
 import { getTranslations } from "@/lib/i18n/server";
-import { isCategoryId } from "@/lib/services/discovery-mappers";
 import {
   categoryExists,
   searchPublicEventsPaginated,
@@ -27,9 +27,7 @@ export async function generateMetadata({
   const { t } = await getTranslations();
 
   return createPageMetadata({
-    title: isCategoryId(slug)
-      ? t(`discovery.categories.${slug}`)
-      : t("discovery.categoriesPageTitle"),
+    title: getCategoryLabel(t, slug),
     description: t("discovery.categoriesPageDescription"),
   });
 }
@@ -46,7 +44,7 @@ export default async function CategoryDetailPage({
   const page = parsePageParam(query.page);
   const { t, locale } = await getTranslations();
 
-  if (!isCategoryId(slug) || !(await categoryExists(slug))) {
+  if (!(await categoryExists(slug))) {
     notFound();
   }
 
@@ -62,7 +60,7 @@ export default async function CategoryDetailPage({
   return (
     <PageContainer className="max-w-[1440px] gap-8">
       <h1 className="text-3xl font-semibold tracking-tight">
-        {t(`discovery.categories.${slug}`)}
+        {getCategoryLabel(t, slug)}
       </h1>
       {result.events.length === 0 ? (
         <EmptyState

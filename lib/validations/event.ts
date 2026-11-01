@@ -1,7 +1,7 @@
 import { z } from "zod";
 
+import { isValidCategorySlugFormat } from "@/lib/category-slug";
 import type { Translator } from "@/lib/i18n";
-import { isCategoryId } from "@/lib/services/discovery-mappers";
 
 function emptyStringToNull(value: string) {
   const trimmed = value.trim();
@@ -99,7 +99,7 @@ export function createEventFormSchema(t: Translator) {
             .string()
             .nullable()
             .refine(
-              (value) => value === null || isCategoryId(value),
+              (value) => value === null || isValidCategorySlugFormat(value),
               t("validation.event.categoryInvalid"),
             ),
         ),

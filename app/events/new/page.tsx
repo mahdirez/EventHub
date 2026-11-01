@@ -4,6 +4,7 @@ import { PageContainer } from "@/components/layout/page-container";
 import { createEventAction } from "@/lib/actions/events";
 import { createPageMetadata } from "@/lib/metadata";
 import { getTranslations } from "@/lib/i18n/server";
+import { listCategoryOptions } from "@/lib/services/category.service";
 
 export async function generateMetadata() {
   const { t } = await getTranslations();
@@ -16,6 +17,7 @@ export async function generateMetadata() {
 
 export default async function NewEventPage() {
   const { t } = await getTranslations();
+  const categories = await listCategoryOptions();
 
   return (
     <PageContainer className="max-w-[1440px] gap-8">
@@ -24,6 +26,7 @@ export default async function NewEventPage() {
         description={t("event.metadata.createDescription")}
       />
       <EventForm
+        categories={categories}
         submitLabel={t("common.createEvent")}
         pendingLabel={t("event.creating")}
         cancelHref="/dashboard"

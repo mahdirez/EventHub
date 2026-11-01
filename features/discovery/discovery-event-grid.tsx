@@ -1,4 +1,5 @@
 import { EventCard } from "@/components/design-system/event-card";
+import { getCategoryLabel } from "@/lib/category-label";
 import {
   formatCompactCount,
   formatEventDate,
@@ -28,8 +29,8 @@ export function DiscoveryEventGrid({
           key={event.id}
           eventId={event.id}
           title={event.title}
-          categoryId={event.categoryId}
-          categoryName={t(`discovery.categories.${event.categoryId}`)}
+          categorySlug={event.categorySlug}
+          categoryName={getCategoryLabel(t, event.categorySlug)}
           imageUrl={event.imageUrl}
           scheduleLabel={
             event.dateIso

@@ -12,6 +12,7 @@ import { SectionHeading } from "@/components/design-system/section-heading";
 import { UpcomingFilterTabs } from "@/components/design-system/upcoming-filter-tabs";
 import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
+import { getCategoryLabel } from "@/lib/category-label";
 import { PLACEHOLDER_IMAGES } from "@/lib/constants/placeholder-images";
 import {
   formatCompactCount,
@@ -82,7 +83,11 @@ export async function HomeContent() {
           </div>
         </div>
         <div className={pageGutter}>
-          <HeroSearch />
+          <HeroSearch
+            categoryOptions={categories.map((category) => ({
+              slug: category.slug,
+            }))}
+          />
         </div>
       </section>
 
@@ -101,9 +106,9 @@ export async function HomeContent() {
             ) : (
               categories.map((category) => (
                 <CategoryCard
-                  key={category.id}
-                  id={category.id}
-                  name={t(`discovery.categories.${category.id}`)}
+                  key={category.slug}
+                  slug={category.slug}
+                  name={getCategoryLabel(t, category.slug)}
                   eventsLabel={t("discovery.eventsCount", {
                     count: category.eventCount,
                   })}
@@ -139,8 +144,8 @@ export async function HomeContent() {
                     key={event.id}
                     eventId={event.id}
                     title={event.title}
-                    categoryId={event.categoryId}
-                    categoryName={t(`discovery.categories.${event.categoryId}`)}
+                    categorySlug={event.categorySlug}
+                    categoryName={getCategoryLabel(t, event.categorySlug)}
                     imageUrl={event.imageUrl}
                     scheduleLabel={
                       event.dateIso

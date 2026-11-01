@@ -1,12 +1,12 @@
 import type { Prisma } from "@/app/generated/prisma/client";
-import type { MockCategoryId } from "@/lib/constants/mock-discovery";
-import { isCategoryId } from "@/lib/services/discovery-mappers";
+
+import { isValidCategorySlugFormat } from "@/lib/category-slug";
 
 export type ExploreDateFilter = "week" | "month";
 
 export type ExploreFilters = {
   q?: string;
-  category?: MockCategoryId;
+  category?: string;
   location?: string;
   date?: ExploreDateFilter;
 };
@@ -22,7 +22,7 @@ export function parseExploreFilters(
   const filters: ExploreFilters = {};
   if (q) filters.q = q;
   if (location) filters.location = location;
-  if (categoryRaw && isCategoryId(categoryRaw)) {
+  if (categoryRaw && isValidCategorySlugFormat(categoryRaw)) {
     filters.category = categoryRaw;
   }
   if (dateRaw === "week" || dateRaw === "month") {

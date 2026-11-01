@@ -31,5 +31,19 @@ export function mockCategoriesFallback(): DiscoveryCategory[] {
 }
 
 export function mockPopularEventsFallback(): DiscoveryEventCard[] {
-  return shouldUseDiscoveryMocks() ? MOCK_POPULAR_EVENTS : [];
+  if (!shouldUseDiscoveryMocks()) {
+    return [];
+  }
+
+  return MOCK_POPULAR_EVENTS.map((event) => ({
+    id: event.id,
+    slug: event.slug,
+    title: event.title,
+    categorySlug: event.categorySlug,
+    dateIso: event.dateIso,
+    location: event.location,
+    description: event.description,
+    rsvpCount: event.rsvpCount,
+    imageUrl: event.imageUrl,
+  }));
 }

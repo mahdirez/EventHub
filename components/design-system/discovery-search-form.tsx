@@ -11,17 +11,8 @@ import { useRouter } from "next/navigation";
 
 import { PrimaryButton } from "@/components/design-system/primary-button";
 import { useI18n } from "@/components/i18n-provider";
-import type { MockCategoryId } from "@/lib/constants/mock-discovery";
+import { getCategoryLabel } from "@/lib/category-label";
 import { cn } from "@/lib/utils";
-
-const categoryIds: MockCategoryId[] = [
-  "technology",
-  "music",
-  "business",
-  "art",
-  "education",
-  "sports",
-];
 
 export type DiscoverySearchValues = {
   q?: string;
@@ -33,6 +24,7 @@ export type DiscoverySearchValues = {
 type DiscoverySearchFormProps = {
   defaultValues?: DiscoverySearchValues;
   className?: string;
+  categoryOptions: { slug: string }[];
 };
 
 const controlClassName =
@@ -41,6 +33,7 @@ const controlClassName =
 export function DiscoverySearchForm({
   defaultValues,
   className,
+  categoryOptions,
 }: DiscoverySearchFormProps) {
   const { t } = useI18n();
   const router = useRouter();
@@ -115,9 +108,9 @@ export function DiscoverySearchForm({
             defaultValue={defaultValues?.category ?? ""}
             className="sm:col-span-2 lg:col-span-1"
           >
-            {categoryIds.map((id) => (
-              <option key={id} value={id}>
-                {t(`discovery.categories.${id}`)}
+            {categoryOptions.map((category) => (
+              <option key={category.slug} value={category.slug}>
+                {getCategoryLabel(t, category.slug)}
               </option>
             ))}
           </FilterSelect>

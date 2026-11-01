@@ -25,7 +25,7 @@ describe("parseExploreFilters", () => {
   it("ignores invalid category and date values", () => {
     expect(
       parseExploreFilters({
-        category: "invalid",
+        category: "Bad Category",
         date: "year",
       }),
     ).toEqual({});

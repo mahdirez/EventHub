@@ -3,23 +3,16 @@ import Link from "next/link";
 
 import { EventCardCover } from "@/components/design-system/event-card-cover";
 import { EventFavoriteButton } from "@/components/design-system/event-favorite-button";
-import type { MockCategoryId } from "@/lib/constants/mock-discovery";
-import { categoryCoverFallback } from "@/lib/discovery-images";
+import {
+  getCategoryBadgeClass,
+  getCategoryCoverFallback,
+} from "@/lib/category-display";
 import { cn } from "@/lib/utils";
-
-const categoryBadgeStyles: Record<MockCategoryId, string> = {
-  technology: "bg-sky-500/90 text-white",
-  music: "bg-violet-500/90 text-white",
-  business: "bg-emerald-500/90 text-white",
-  art: "bg-pink-500/90 text-white",
-  education: "bg-amber-500/90 text-white",
-  sports: "bg-orange-500/90 text-white",
-};
 
 export function EventCard({
   eventId,
   title,
-  categoryId,
+  categorySlug,
   categoryName,
   imageUrl,
   scheduleLabel,
@@ -32,7 +25,7 @@ export function EventCard({
 }: {
   eventId: string;
   title: string;
-  categoryId: MockCategoryId;
+  categorySlug: string;
   categoryName: string;
   imageUrl: string;
   scheduleLabel: string;
@@ -43,7 +36,7 @@ export function EventCard({
   favorited?: boolean;
   isAuthenticated?: boolean;
 }) {
-  const fallbackUrl = categoryCoverFallback[categoryId];
+  const fallbackUrl = getCategoryCoverFallback(categorySlug);
 
   return (
     <article
@@ -62,7 +55,7 @@ export function EventCard({
         <span
           className={cn(
             "absolute start-3 top-3 rounded-lg px-2.5 py-1 text-xs font-medium",
-            categoryBadgeStyles[categoryId],
+            getCategoryBadgeClass(categorySlug),
           )}
         >
           {categoryName}
@@ -75,7 +68,7 @@ export function EventCard({
       </div>
       <div className="flex flex-1 flex-col gap-3 p-4 sm:p-5">
         <div className="space-y-1.5">
-          <h3 className="text-base font-semibold leading-snug text-foreground line-clamp-2">
+          <h3 className="line-clamp-2 text-base font-semibold leading-snug text-foreground">
             {title}
           </h3>
           <p className="text-sm leading-relaxed text-[var(--muted-foreground)]">
@@ -101,7 +94,9 @@ export function EventCard({
           className="mt-auto inline-flex items-center gap-1.5 pt-1 text-sm font-medium text-[var(--accent)] transition-colors hover:text-[var(--accent-strong)]"
         >
           {viewDetailsLabel}
-          <span aria-hidden className="rtl:rotate-180">→</span>
+          <span aria-hidden className="rtl:rotate-180">
+            →
+          </span>
         </Link>
       </div>
     </article>

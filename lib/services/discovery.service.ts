@@ -1,10 +1,10 @@
-import type { MockCategoryId } from "@/lib/constants/mock-discovery";
 import {
   mockCategoriesFallback,
   mockPopularEventsFallback,
   shouldUseDiscoveryMocks,
 } from "@/lib/discovery-mocks";
 import { ensureInviteToken } from "@/lib/services/event.service";
+import { categorySlugExists } from "@/lib/services/category.service";
 import { prisma } from "@/lib/prisma";
 import {
   buildPublicEventWhere,
@@ -16,7 +16,6 @@ import {
   getPageCount,
 } from "@/lib/discovery-pagination";
 import {
-  isCategoryId,
   mapEventRowToCard,
   publicEventSelect,
 } from "@/lib/services/discovery-mappers";
@@ -53,34 +52,20 @@ export async function getDiscoveryCategories(): Promise<DiscoveryCategory[]> {
       return mockCategoriesFallback();
     }
 
-    const mapped: DiscoveryCategory[] = rows
-      .filter((row): row is { slug: MockCategoryId; events: { id: string }[] } =>
-        isCategoryId(row.slug),
-      )
-      .map((row) => ({
-        id: row.slug,
-        eventCount: row.events.length,
-      }));
-
-    return mapped.length > 0 ? mapped : mockCategoriesFallback();
+    return rows.map((row) => ({
+      slug: row.slug,
+      eventCount: row.events.length,
+    }));
   } catch {
     return mockCategoriesFallback();
   }
 }
 
 export async function categoryExists(slug: string): Promise<boolean> {
-  if (!isCategoryId(slug)) {
-    return false;
-  }
-
   try {
-    const row = await prisma.category.findUnique({
-      where: { slug },
-      select: { slug: true },
-    });
-    return Boolean(row);
+    return categorySlugExists(slug);
   } catch {
-    return shouldUseDiscoveryMocks() && isCategoryId(slug);
+    return shouldUseDiscoveryMocks();
   }
 }
 

@@ -40,6 +40,9 @@ function mapEventServiceError(error: unknown, t: (key: string) => string) {
     if (error.code === "NOT_FOUND") {
       return actionError(t("actions.eventNotFound"));
     }
+    if (error.code === "INVALID_CATEGORY") {
+      return actionError(t("validation.event.categoryInvalid"));
+    }
   }
 
   return actionError(getErrorMessage(error, t("common.unexpectedError")));

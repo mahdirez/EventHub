@@ -1,24 +1,6 @@
-import type { MockCategoryId } from "@/lib/constants/mock-discovery";
-import {
-  categoryCoverFallback,
-  resolveDiscoveryImageUrl,
-} from "@/lib/discovery-images";
+import { getCategoryCoverFallback } from "@/lib/category-display";
+import { resolveDiscoveryImageUrl } from "@/lib/discovery-images";
 import type { DiscoveryEventCard } from "@/lib/services/discovery.service";
-
-export { categoryCoverFallback };
-
-export function isCategoryId(
-  value: string | null | undefined,
-): value is MockCategoryId {
-  return (
-    value === "technology" ||
-    value === "music" ||
-    value === "business" ||
-    value === "art" ||
-    value === "education" ||
-    value === "sports"
-  );
-}
 
 type EventRow = {
   id: string;
@@ -34,9 +16,7 @@ type EventRow = {
 };
 
 export function mapEventRowToCard(row: EventRow): DiscoveryEventCard {
-  const categoryId = isCategoryId(row.categorySlug)
-    ? row.categorySlug
-    : "technology";
+  const categorySlug = row.categorySlug ?? "technology";
   const goingCount = row.rsvps.filter((r) => r.status === "going").length;
   const maybeCount = row.rsvps.filter((r) => r.status === "maybe").length;
 
@@ -44,12 +24,12 @@ export function mapEventRowToCard(row: EventRow): DiscoveryEventCard {
     id: row.id,
     slug: row.slug ?? row.id,
     title: row.title,
-    categoryId,
+    categorySlug,
     dateIso: row.eventDate?.toISOString() ?? null,
     location: row.city ?? row.location ?? "",
     description: row.description ?? "",
     rsvpCount: goingCount + maybeCount,
-    imageUrl: resolveDiscoveryImageUrl(row.coverImageUrl, categoryId),
+    imageUrl: resolveDiscoveryImageUrl(row.coverImageUrl, categorySlug),
   };
 }
 
@@ -65,3 +45,5 @@ export const publicEventSelect = {
   coverImageUrl: true,
   rsvps: { select: { status: true } },
 } as const;
+
+export { getCategoryCoverFallback };

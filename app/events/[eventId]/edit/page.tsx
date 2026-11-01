@@ -8,6 +8,7 @@ import { updateEventAction } from "@/lib/actions/events";
 import { getSession } from "@/lib/auth/server";
 import { createPageMetadata } from "@/lib/metadata";
 import { getTranslations } from "@/lib/i18n/server";
+import { listCategoryOptions } from "@/lib/services/category.service";
 import { prisma } from "@/lib/prisma";
 
 export async function generateMetadata({
@@ -67,6 +68,7 @@ export default async function EditEventPage({
 
   const updateAction = updateEventAction.bind(null, event.id);
   const { t } = await getTranslations();
+  const categories = await listCategoryOptions();
 
   return (
     <PageContainer className="max-w-[1440px] gap-8">
@@ -75,6 +77,7 @@ export default async function EditEventPage({
         description={t("event.metadata.editDescription")}
       />
       <EventForm
+      categories={categories}
       submitLabel={t("common.saveChanges")}
       pendingLabel={t("event.saving")}
       cancelHref={`/events/${event.id}`}

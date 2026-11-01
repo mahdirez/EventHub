@@ -225,14 +225,14 @@ Server Action POST requests skip the proxy matcher so actions enforce their own 
 - CSV attendee exports use localized column headers from the same dictionaries
 - Neon Auth UI pages (sign-in, account settings) are provided by `@neondatabase/auth` and are **not** fully translated; app-owned auth/account **metadata titles** use `auth.*` and `account.*` keys
 
-To add or edit translations, update the dictionaries in `lib/i18n/locales/`.
+To add or edit translations, update the dictionaries in `lib/i18n/locales/`. New category slugs picked up from the database use `discovery.categories.<slug>` when present, otherwise a title-cased slug label.
 
 ---
 
 ## 🗄️ Database Schema
 
 ```
-Category       — slug + sort order; linked to public events
+Category       — slug + sort order; linked to public events (seeded in migrations; add rows to extend)
 Event          — owner, details, visibility (private|public), category, slug, cover
 EventInvite    — one invite link per event (unique token)
 EventRsvp      — guest responses (unique per event + normalized email)

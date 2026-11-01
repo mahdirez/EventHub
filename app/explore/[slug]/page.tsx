@@ -8,6 +8,7 @@ import {
   formatCompactCount,
   formatEventDate,
 } from "@/lib/format-discovery";
+import { getCategoryLabel } from "@/lib/category-label";
 import { createPublicEventMetadata } from "@/lib/metadata";
 import { getTranslations } from "@/lib/i18n/server";
 import { getPublicEventBySlug, getPublicEventPageContext } from "@/lib/services/discovery.service";
@@ -75,7 +76,7 @@ export default async function ExploreEventPage({
         <div className="space-y-4 p-6 sm:p-8">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-[var(--accent-muted)]">
-              {t(`discovery.categories.${event.categoryId}`)}
+              {getCategoryLabel(t, event.categorySlug)}
             </p>
             <h1 className="text-3xl font-semibold tracking-tight">
               {event.title}

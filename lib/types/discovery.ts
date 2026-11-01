@@ -1,10 +1,8 @@
-import type { MockCategoryId } from "@/lib/constants/mock-discovery";
-
 export type DiscoveryEventCard = {
   id: string;
   slug: string;
   title: string;
-  categoryId: MockCategoryId;
+  categorySlug: string;
   dateIso: string | null;
   location: string;
   description: string;
@@ -13,6 +11,6 @@ export type DiscoveryEventCard = {
 };
 
 export type DiscoveryCategory = {
-  id: MockCategoryId;
+  slug: string;
   eventCount: number;
 };

@@ -1,5 +1,6 @@
 import { PageContainer } from "@/components/layout/page-container";
 import { CategoryCard } from "@/components/design-system/category-card";
+import { getCategoryLabel } from "@/lib/category-label";
 import { createPageMetadata } from "@/lib/metadata";
 import { getTranslations } from "@/lib/i18n/server";
 import { getDiscoveryCategories } from "@/lib/services/discovery.service";
@@ -30,9 +31,9 @@ export default async function CategoriesPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {categories.map((category) => (
           <CategoryCard
-            key={category.id}
-            id={category.id}
-            name={t(`discovery.categories.${category.id}`)}
+            key={category.slug}
+            slug={category.slug}
+            name={getCategoryLabel(t, category.slug)}
             eventsLabel={t("discovery.eventsCount", {
               count: category.eventCount,
             })}

@@ -17,20 +17,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useActionToast } from "@/hooks/use-action-toast";
 import { useI18n } from "@/components/i18n-provider";
-import type { MockCategoryId } from "@/lib/constants/mock-discovery";
+import { getCategoryLabel } from "@/lib/category-label";
 import type { ActionState } from "@/lib/action-state";
 import { toDatetimeLocalValue } from "@/lib/event-datetime";
 import { eventFormConstraints } from "@/lib/validations/event";
 import { fieldErrorMessages } from "@/lib/validations/parse-form-data";
-
-const categoryIds: MockCategoryId[] = [
-  "technology",
-  "music",
-  "business",
-  "art",
-  "education",
-  "sports",
-];
 
 type EventFormValues = {
   title: string;
@@ -49,6 +40,7 @@ type EventFormProps = {
   submitLabel: string;
   pendingLabel?: string;
   cancelHref: string;
+  categories: { slug: string }[];
   action: (
     prevState: ActionState,
     formData: FormData,
@@ -60,6 +52,7 @@ export function EventForm({
   submitLabel,
   pendingLabel,
   cancelHref,
+  categories,
   action,
   defaultValues,
 }: EventFormProps) {
@@ -124,9 +117,9 @@ export function EventForm({
                     className="flex h-10 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] px-3 text-sm"
                   >
                     <option value="">{t("event.form.categoryPlaceholder")}</option>
-                    {categoryIds.map((id) => (
-                      <option key={id} value={id}>
-                        {t(`discovery.categories.${id}`)}
+                    {categories.map((category) => (
+                      <option key={category.slug} value={category.slug}>
+                        {getCategoryLabel(t, category.slug)}
                       </option>
                     ))}
                   </select>

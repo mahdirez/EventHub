@@ -1,11 +1,12 @@
-import { buildEventWriteData } from "@/lib/services/event-organizer.service";
+import { buildEventWriteData, type EventWriteData } from "@/lib/services/event-organizer.service";
+import { categorySlugExists } from "@/lib/services/category.service";
 import type { EventFormInput } from "@/lib/validations/event";
 import { prisma } from "@/lib/prisma";
 
 export class EventServiceError extends Error {
-  readonly code: "UNAUTHORIZED" | "NOT_FOUND";
+  readonly code: "UNAUTHORIZED" | "NOT_FOUND" | "INVALID_CATEGORY";
 
-  constructor(code: "UNAUTHORIZED" | "NOT_FOUND") {
+  constructor(code: "UNAUTHORIZED" | "NOT_FOUND" | "INVALID_CATEGORY") {
     super(code);
     this.code = code;
   }
@@ -28,8 +29,23 @@ export async function requireEventOwner(eventId: string, userId: string | undefi
   return event;
 }
 
+async function assertCategorySlugForWrite(
+  visibility: EventWriteData["visibility"],
+  categorySlug: string | null,
+) {
+  if (visibility !== "public" || !categorySlug) {
+    return;
+  }
+
+  if (!(await categorySlugExists(categorySlug))) {
+    throw new EventServiceError("INVALID_CATEGORY");
+  }
+}
+
 export async function createEventForOwner(userId: string, input: EventFormInput) {
   const writeData = await buildEventWriteData(input);
+
+  await assertCategorySlugForWrite(writeData.visibility, writeData.categorySlug);
 
   const created = await prisma.event.create({
     data: {
@@ -70,6 +86,8 @@ export async function updateEventForOwner(
   input: EventFormInput,
 ) {
   const writeData = await buildEventWriteData(input, { excludeEventId: eventId });
+
+  await assertCategorySlugForWrite(writeData.visibility, writeData.categorySlug);
 
   await prisma.event.update({
     where: { id: eventId },

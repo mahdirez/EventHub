@@ -1,22 +1,13 @@
-import type { MockCategoryId } from "@/lib/constants/mock-discovery";
+import { getCategoryCoverFallback } from "@/lib/category-display";
 import { PLACEHOLDER_IMAGES } from "@/lib/constants/placeholder-images";
 
 const ALLOWED_IMAGE_HOSTS = new Set(["images.unsplash.com"]);
 
-export const categoryCoverFallback: Record<MockCategoryId, string> = {
-  technology: PLACEHOLDER_IMAGES.events.technology,
-  music: PLACEHOLDER_IMAGES.events.music,
-  business: PLACEHOLDER_IMAGES.events.business,
-  art: PLACEHOLDER_IMAGES.events.art,
-  education: PLACEHOLDER_IMAGES.events.education,
-  sports: PLACEHOLDER_IMAGES.events.sports,
-};
-
 export function resolveDiscoveryImageUrl(
   url: string | null | undefined,
-  categoryId: MockCategoryId,
+  categorySlug: string,
 ): string {
-  const fallback = categoryCoverFallback[categoryId];
+  const fallback = getCategoryCoverFallback(categorySlug);
 
   if (!url?.trim()) {
     return fallback;
@@ -36,3 +27,5 @@ export function resolveDiscoveryImageUrl(
 
   return fallback;
 }
+
+export { PLACEHOLDER_IMAGES };

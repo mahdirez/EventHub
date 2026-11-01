@@ -262,4 +262,6 @@ Ensure your Neon Auth redirect URLs include your production domain.
 
 - Neon Auth UI pages (sign-in, account settings) are provided by `@neondatabase/auth` and are not fully translated
 - Placeholder discovery categories and events on the home page appear only in **development** (or when `SHOW_DISCOVERY_MOCKS=true`). Production shows empty-state messaging until real public events exist.
+- Public RSVP uses a hidden honeypot field and in-memory rate limits per client IP and invite token (15 submissions / 15 minutes per IP, 8 / 15 minutes per token). For multi-instance production, replace with a shared store (for example Redis).
+- Guest RSVP email addresses are **not verified** yet; anyone can submit a response for any email. Planned improvement: magic-link confirmation before counting a Going response.
 - After schema changes, always run `npx prisma migrate deploy` and `npx prisma generate`

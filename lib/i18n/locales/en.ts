@@ -233,6 +233,8 @@ export const en = {
       "Capacity cannot be less than the current number of going RSVPs ({count}).",
     inviteInvalid: "Invite link is invalid.",
     atCapacity: "This event is at capacity. Please choose Maybe or Not going.",
+    rsvpRateLimited:
+      "Too many RSVP attempts. Please wait a few minutes and try again.",
   },
   validation: {
     generic: "Please check the form and try again.",

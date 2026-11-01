@@ -18,6 +18,7 @@ import { canRsvpGoing } from "@/lib/event-capacity";
 import { getStoredRsvp, setStoredRsvp, type StoredRsvp } from "@/lib/rsvp-storage";
 import { fieldErrorMessages } from "@/lib/validations/parse-form-data";
 import { rsvpFormConstraints } from "@/lib/validations/rsvp";
+import { RSVP_HONEYPOT_FIELD } from "@/lib/rsvp-honeypot";
 
 type InviteRsvpFormProps = {
   token: string;
@@ -85,7 +86,21 @@ export function InviteRsvpForm({
           {t("rsvp.atCapacity")}
         </p>
       ) : null}
-      <form key={formKey} action={formAction} noValidate>
+      <form key={formKey} action={formAction} noValidate className="relative">
+        <div
+          className="pointer-events-none absolute -left-[9999px] h-0 w-0 overflow-hidden"
+          aria-hidden
+        >
+          <label htmlFor={RSVP_HONEYPOT_FIELD}>Company</label>
+          <input
+            id={RSVP_HONEYPOT_FIELD}
+            name={RSVP_HONEYPOT_FIELD}
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            defaultValue=""
+          />
+        </div>
         <FieldGroup>
           <FieldSet>
             <Field data-invalid={Boolean(state?.fieldErrors?.name)}>

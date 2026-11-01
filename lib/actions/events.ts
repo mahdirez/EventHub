@@ -28,6 +28,9 @@ import {
   submitRsvpForInviteToken,
 } from "@/lib/services/rsvp.service";
 import { getSession } from "@/lib/auth/server";
+import { getRequestClientIp } from "@/lib/request-client";
+import { isRsvpHoneypotFilled } from "@/lib/rsvp-honeypot";
+import { checkRsvpRateLimit } from "@/lib/rsvp-rate-limit";
 
 function mapEventServiceError(error: unknown, t: (key: string) => string) {
   if (error instanceof EventServiceError) {
@@ -172,16 +175,44 @@ export async function createInviteLinkAction(
   }
 }
 
+function redirectAfterRsvpSubmit(
+  token: string,
+  exploreReturnSlug: string | null,
+  email?: string,
+) {
+  const query = new URLSearchParams({ submitted: "1" });
+  if (email) {
+    query.set("email", email);
+  }
+
+  if (exploreReturnSlug) {
+    redirect(`/explore/${exploreReturnSlug}?${query.toString()}#rsvp`);
+  }
+
+  redirect(`/invite/${token}?${query.toString()}`);
+}
+
 export async function submitOrUpdateRsvpAction(
   token: string,
   exploreReturnSlug: string | null,
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
+  const { t } = await getTranslations();
+
+  if (isRsvpHoneypotFilled(formData)) {
+    redirectAfterRsvpSubmit(token, exploreReturnSlug);
+  }
+
+  const clientIp = await getRequestClientIp();
+  const rateLimit = checkRsvpRateLimit(clientIp, token);
+  if (!rateLimit.allowed) {
+    return actionError(t("actions.rsvpRateLimited"));
+  }
+
   let submittedEmail: string;
 
   try {
-    const { t } = await getTranslations();
     const parsed = parseFormData(createRsvpFormSchema(t), formData, {
       fallbackMessage: t("validation.generic"),
     });
@@ -191,7 +222,6 @@ export async function submitOrUpdateRsvpAction(
 
     submittedEmail = await submitRsvpForInviteToken(token, parsed.data);
   } catch (error) {
-    const { t } = await getTranslations();
     if (error instanceof RsvpServiceError) {
       if (error.code === "INVITE_INVALID") {
         return actionError(t("actions.inviteInvalid"));
@@ -208,13 +238,5 @@ export async function submitOrUpdateRsvpAction(
     revalidatePath(`/explore/${exploreReturnSlug}`);
   }
 
-  if (exploreReturnSlug) {
-    redirect(
-      `/explore/${exploreReturnSlug}?submitted=1&email=${encodeURIComponent(submittedEmail)}#rsvp`,
-    );
-  }
-
-  redirect(
-    `/invite/${token}?submitted=1&email=${encodeURIComponent(submittedEmail)}`,
-  );
+  redirectAfterRsvpSubmit(token, exploreReturnSlug, submittedEmail);
 }

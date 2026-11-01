@@ -73,6 +73,11 @@ export const en = {
     noEventsTitle: "No events found",
     noEventsDescription:
       "Try different keywords or filters, or browse events by category.",
+    homeEmptyCategories:
+      "No categories with public events yet. Publish a public event to get started.",
+    homeEmptyPopularTitle: "No public events yet",
+    homeEmptyPopularDescription:
+      "When organizers publish public events, they will appear here.",
     pagination: {
       previous: "Previous",
       next: "Next",

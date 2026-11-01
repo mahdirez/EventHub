@@ -76,6 +76,9 @@ DATABASE_URL="postgresql://..."
 # Neon Auth — from your Neon project Auth settings
 NEON_AUTH_BASE_URL="https://..."
 NEON_AUTH_COOKIE_SECRET="your-random-secret-at-least-32-chars"
+
+# Optional: placeholder home discovery data (see README)
+# SHOW_DISCOVERY_MOCKS=false
 ```
 
 | Variable | Description |
@@ -83,6 +86,7 @@ NEON_AUTH_COOKIE_SECRET="your-random-secret-at-least-32-chars"
 | `DATABASE_URL` | Postgres connection string from Neon |
 | `NEON_AUTH_BASE_URL` | Base URL for your Neon Auth instance |
 | `NEON_AUTH_COOKIE_SECRET` | Secret used to sign auth cookies (32+ random characters) |
+| `SHOW_DISCOVERY_MOCKS` | Optional. `true` forces placeholder categories/events on an empty home page; `false` shows empty states even in development. Default: mocks only when `NODE_ENV=development`. |
 
 ### 3. Run database migrations
 
@@ -222,5 +226,5 @@ Ensure your Neon Auth redirect URLs include your production domain.
 ## 📝 Notes
 
 - Neon Auth UI pages (sign-in, account settings) are provided by `@neondatabase/auth` and are not fully translated
-- When the database has no public events yet, the home page may show placeholder discovery data in development
+- Placeholder discovery categories and events on the home page appear only in **development** (or when `SHOW_DISCOVERY_MOCKS=true`). Production shows empty-state messaging until real public events exist.
 - After schema changes, always run `npx prisma migrate deploy` and `npx prisma generate`

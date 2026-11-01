@@ -1,5 +1,6 @@
-import { SparklesIcon } from "lucide-react";
+import { CalendarDaysIcon, SparklesIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { Suspense } from "react";
 
 import { CategoryCard } from "@/components/design-system/category-card";
@@ -9,6 +10,8 @@ import { HeroSearch } from "@/components/design-system/hero-search";
 import { PromoCard } from "@/components/design-system/promo-card";
 import { SectionHeading } from "@/components/design-system/section-heading";
 import { UpcomingFilterTabs } from "@/components/design-system/upcoming-filter-tabs";
+import { EmptyState } from "@/components/empty-state";
+import { Button } from "@/components/ui/button";
 import { PLACEHOLDER_IMAGES } from "@/lib/constants/placeholder-images";
 import {
   formatCompactCount,
@@ -91,16 +94,22 @@ export async function HomeContent() {
             actionHref="/categories"
           />
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-            {categories.map((category) => (
-              <CategoryCard
-                key={category.id}
-                id={category.id}
-                name={t(`discovery.categories.${category.id}`)}
-                eventsLabel={t("discovery.eventsCount", {
-                  count: category.eventCount,
-                })}
-              />
-            ))}
+            {categories.length === 0 ? (
+              <p className="col-span-full rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-4 py-8 text-center text-sm text-[var(--muted-foreground)]">
+                {t("discovery.homeEmptyCategories")}
+              </p>
+            ) : (
+              categories.map((category) => (
+                <CategoryCard
+                  key={category.id}
+                  id={category.id}
+                  name={t(`discovery.categories.${category.id}`)}
+                  eventsLabel={t("discovery.eventsCount", {
+                    count: category.eventCount,
+                  })}
+                />
+              ))
+            )}
           </div>
         </section>
 
@@ -112,29 +121,43 @@ export async function HomeContent() {
               actionHref="/explore"
             />
             <div className="grid gap-4 sm:grid-cols-2 sm:gap-5">
-              {popularEvents.map((event) => (
-                <EventCard
-                  key={event.id}
-                  eventId={event.id}
-                  title={event.title}
-                  categoryId={event.categoryId}
-                  categoryName={t(`discovery.categories.${event.categoryId}`)}
-                  imageUrl={event.imageUrl}
-                  scheduleLabel={
-                    event.dateIso
-                      ? `${formatEventDate(event.dateIso, locale)} • ${event.location}`
-                      : event.location
+              {popularEvents.length === 0 ? (
+                <EmptyState
+                  className="col-span-full rounded-2xl border border-dashed border-[var(--border)] bg-[var(--surface)]"
+                  icon={CalendarDaysIcon}
+                  title={t("discovery.homeEmptyPopularTitle")}
+                  description={t("discovery.homeEmptyPopularDescription")}
+                  action={
+                    <Button asChild variant="outline">
+                      <Link href="/explore">{t("discovery.promo.cta")}</Link>
+                    </Button>
                   }
-                  description={event.description}
-                  rsvpLabel={t("discovery.rsvps", {
-                    count: formatCompactCount(event.rsvpCount),
-                  })}
-                  viewDetailsLabel={t("common.viewDetails")}
-                  href={`/explore/${event.slug}`}
-                  favorited={favoriteContext.favoriteEventIds.has(event.id)}
-                  isAuthenticated={favoriteContext.isAuthenticated}
                 />
-              ))}
+              ) : (
+                popularEvents.map((event) => (
+                  <EventCard
+                    key={event.id}
+                    eventId={event.id}
+                    title={event.title}
+                    categoryId={event.categoryId}
+                    categoryName={t(`discovery.categories.${event.categoryId}`)}
+                    imageUrl={event.imageUrl}
+                    scheduleLabel={
+                      event.dateIso
+                        ? `${formatEventDate(event.dateIso, locale)} • ${event.location}`
+                        : event.location
+                    }
+                    description={event.description}
+                    rsvpLabel={t("discovery.rsvps", {
+                      count: formatCompactCount(event.rsvpCount),
+                    })}
+                    viewDetailsLabel={t("common.viewDetails")}
+                    href={`/explore/${event.slug}`}
+                    favorited={favoriteContext.favoriteEventIds.has(event.id)}
+                    isAuthenticated={favoriteContext.isAuthenticated}
+                  />
+                ))
+              )}
             </div>
           </section>
 

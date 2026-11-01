@@ -1,5 +1,9 @@
-import { MOCK_CATEGORIES, MOCK_POPULAR_EVENTS } from "@/lib/constants/mock-discovery";
 import type { MockCategoryId } from "@/lib/constants/mock-discovery";
+import {
+  mockCategoriesFallback,
+  mockPopularEventsFallback,
+  shouldUseDiscoveryMocks,
+} from "@/lib/discovery-mocks";
 import { prisma } from "@/lib/prisma";
 import {
   buildPublicEventWhere,
@@ -45,7 +49,7 @@ export async function getDiscoveryCategories(): Promise<DiscoveryCategory[]> {
     });
 
     if (rows.length === 0) {
-      return MOCK_CATEGORIES;
+      return mockCategoriesFallback();
     }
 
     const mapped: DiscoveryCategory[] = rows
@@ -57,9 +61,9 @@ export async function getDiscoveryCategories(): Promise<DiscoveryCategory[]> {
         eventCount: row.events.length,
       }));
 
-    return mapped.length > 0 ? mapped : MOCK_CATEGORIES;
+    return mapped.length > 0 ? mapped : mockCategoriesFallback();
   } catch {
-    return MOCK_CATEGORIES;
+    return mockCategoriesFallback();
   }
 }
 
@@ -75,7 +79,7 @@ export async function categoryExists(slug: string): Promise<boolean> {
     });
     return Boolean(row);
   } catch {
-    return isCategoryId(slug);
+    return shouldUseDiscoveryMocks() && isCategoryId(slug);
   }
 }
 
@@ -146,11 +150,11 @@ export async function getPopularDiscoveryEvents(
     });
 
     if (rows.length === 0) {
-      return MOCK_POPULAR_EVENTS;
+      return mockPopularEventsFallback();
     }
 
     return rows.map(mapEventRowToCard);
   } catch {
-    return MOCK_POPULAR_EVENTS;
+    return mockPopularEventsFallback();
   }
 }

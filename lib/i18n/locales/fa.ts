@@ -74,6 +74,11 @@ export const fa = {
     noEventsTitle: "رویدادی پیدا نشد",
     noEventsDescription:
       "فیلترها یا عبارت جستجو را عوض کنید، یا از دسته‌بندی‌ها مرور کنید.",
+    homeEmptyCategories:
+      "هنوز دسته‌ای با رویداد عمومی نیست. یک رویداد عمومی منتشر کنید تا اینجا پر شود.",
+    homeEmptyPopularTitle: "هنوز رویداد عمومی نیست",
+    homeEmptyPopularDescription:
+      "وقتی برگزارکنندگان رویداد عمومی منتشر کنند، اینجا نمایش داده می‌شوند.",
     pagination: {
       previous: "قبلی",
       next: "بعدی",

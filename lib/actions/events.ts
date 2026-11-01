@@ -174,6 +174,7 @@ export async function createInviteLinkAction(
 
 export async function submitOrUpdateRsvpAction(
   token: string,
+  exploreReturnSlug: string | null,
   _prevState: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
@@ -200,6 +201,17 @@ export async function submitOrUpdateRsvpAction(
       }
     }
     return actionError(getErrorMessage(error));
+  }
+
+  revalidateDiscoveryPaths();
+  if (exploreReturnSlug) {
+    revalidatePath(`/explore/${exploreReturnSlug}`);
+  }
+
+  if (exploreReturnSlug) {
+    redirect(
+      `/explore/${exploreReturnSlug}?submitted=1&email=${encodeURIComponent(submittedEmail)}#rsvp`,
+    );
   }
 
   redirect(

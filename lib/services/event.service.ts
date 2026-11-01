@@ -31,13 +31,19 @@ export async function requireEventOwner(eventId: string, userId: string | undefi
 export async function createEventForOwner(userId: string, input: EventFormInput) {
   const writeData = await buildEventWriteData(input);
 
-  return prisma.event.create({
+  const created = await prisma.event.create({
     data: {
       ownerUserId: userId,
       ...writeData,
     },
     select: { id: true },
   });
+
+  if (writeData.visibility === "public") {
+    await ensureInviteToken(created.id);
+  }
+
+  return created;
 }
 
 export async function assertCapacityAllowsUpdate(
@@ -69,12 +75,35 @@ export async function updateEventForOwner(
     where: { id: eventId },
     data: writeData,
   });
+
+  if (writeData.visibility === "public") {
+    await ensureInviteToken(eventId);
+  }
 }
 
 export async function deleteEventForOwner(eventId: string) {
   await prisma.event.delete({
     where: { id: eventId },
   });
+}
+
+export async function ensureInviteToken(eventId: string): Promise<string> {
+  const existing = await prisma.eventInvite.findUnique({
+    where: { eventId },
+    select: { token: true },
+  });
+
+  if (existing) {
+    return existing.token;
+  }
+
+  const token = crypto.randomUUID().replace(/-/g, "");
+
+  await prisma.eventInvite.create({
+    data: { eventId, token },
+  });
+
+  return token;
 }
 
 export async function upsertInviteToken(eventId: string) {

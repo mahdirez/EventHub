@@ -79,6 +79,10 @@ export const fa = {
     homeEmptyPopularTitle: "هنوز رویداد عمومی نیست",
     homeEmptyPopularDescription:
       "وقتی برگزارکنندگان رویداد عمومی منتشر کنند، اینجا نمایش داده می‌شوند.",
+    publicRsvpCta: "RSVP این رویداد",
+    publicRsvpSectionTitle: "پاسخ شما",
+    publicRsvpSectionDescription:
+      "نیازی به حساب کاربری نیست. پاسخ خود را اینجا ثبت یا به‌روز کنید.",
     pagination: {
       previous: "قبلی",
       next: "بعدی",

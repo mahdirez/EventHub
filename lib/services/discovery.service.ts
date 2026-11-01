@@ -4,6 +4,7 @@ import {
   mockPopularEventsFallback,
   shouldUseDiscoveryMocks,
 } from "@/lib/discovery-mocks";
+import { ensureInviteToken } from "@/lib/services/event.service";
 import { prisma } from "@/lib/prisma";
 import {
   buildPublicEventWhere,
@@ -136,6 +137,24 @@ export async function getPublicEventBySlug(
   }
 
   return mapEventRowToCard(row);
+}
+
+export type PublicEventPageContext = {
+  event: DiscoveryEventCard;
+  inviteToken: string;
+};
+
+export async function getPublicEventPageContext(
+  slug: string,
+): Promise<PublicEventPageContext | null> {
+  const event = await getPublicEventBySlug(slug);
+  if (!event) {
+    return null;
+  }
+
+  const inviteToken = await ensureInviteToken(event.id);
+
+  return { event, inviteToken };
 }
 
 export async function getPopularDiscoveryEvents(

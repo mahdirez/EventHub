@@ -166,7 +166,7 @@ proxy.ts              # Auth proxy for organizer and signed-in-only app routes
 5. Track RSVPs and export attendees as CSV
 
 **Guest flow**
-1. Open the invite link (`/invite/{token}`)
+1. Open the invite link (`/invite/{token}`) or a public event page (`/explore/{slug}`) and scroll to RSVP
 2. Submit name, email, and attendance status
 3. Update the response anytime using the same email
 

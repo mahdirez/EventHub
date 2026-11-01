@@ -78,6 +78,10 @@ export const en = {
     homeEmptyPopularTitle: "No public events yet",
     homeEmptyPopularDescription:
       "When organizers publish public events, they will appear here.",
+    publicRsvpCta: "RSVP to this event",
+    publicRsvpSectionTitle: "Your RSVP",
+    publicRsvpSectionDescription:
+      "No account needed. Submit or update your response below.",
     pagination: {
       previous: "Previous",
       next: "Next",

@@ -13,10 +13,12 @@ export async function InviteRsvpContent({
   token,
   submitted,
   email,
+  exploreReturnSlug = null,
 }: {
   token: string;
   submitted: boolean;
   email?: string;
+  exploreReturnSlug?: string | null;
 }) {
   const { t, dictionary } = await getTranslations();
 
@@ -57,7 +59,11 @@ export async function InviteRsvpContent({
     eventDate: e.eventDate ? e.eventDate.toISOString() : null,
   };
 
-  const submitRsvpForToken = submitOrUpdateRsvpAction.bind(null, token);
+  const submitRsvpForToken = submitOrUpdateRsvpAction.bind(
+    null,
+    token,
+    exploreReturnSlug,
+  );
 
   const existingRsvp = email
     ? await prisma.eventRsvp.findFirst({

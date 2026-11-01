@@ -182,7 +182,7 @@ function redirectAfterRsvpSubmit(
   token: string,
   exploreReturnSlug: string | null,
   email?: string,
-) {
+): never {
   const query = new URLSearchParams({ submitted: "1" });
   if (email) {
     query.set("email", email);
